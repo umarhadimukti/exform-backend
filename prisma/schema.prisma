@@ -18,13 +18,14 @@ datasource db {
   @model - struktur model
 **/
 enum Status {
-  active
-  inactive
+  ACTIVE
+  INACTIVE
 }
 model Role {
   id Int @id @default(autoincrement())
   name String
   description String?
+  users User[]
 }
 model User {
   id Int @id @default(autoincrement())
@@ -32,19 +33,24 @@ model User {
   firstName String
   lastName String?
   password String
-  status Status @default(active)
+  status Status @default(ACTIVE)
   roleId Int
+  role Role @relation(fields: [roleId], references: [id])
+  forms Form[]
 }
 model Form {
   id Int @id @default(autoincrement())
-  userId Int
-  questionId Int
   title String
   description String?
   public Boolean @default(true)
   invites String[]
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+  questionId Int
+  questions Question @relation(fields: [questionId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
 }
 model Question {
   id Int @id @default(autoincrement())
@@ -52,10 +58,13 @@ model Question {
   question String
   options String[]
   required Boolean
+  form Form[]
+  answers Answer[]
 }
 model Answer {
   id Int @id @default(autoincrement())
   userId Int
   formId Int
   questionId Int
+  question Question @relation(fields: [questionId], references: [id])
 }
