@@ -22,70 +22,70 @@ enum Status {
   INACTIVE
 }
 model Role {
-  id Int @id @default(autoincrement())
-  name String
+  id          Int      @default(autoincrement()) @id
+  name        String
   description String?
-  users User[]
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  users       User[]
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
   @@map("roles")
 }
 model User {
-  id Int @id @default(autoincrement())
-  email String @unique
+  id         Int @id @default(autoincrement())
+  email      String @unique
   first_name String
-  last_name String?
-  password String
-  status Status @default(ACTIVE)
-  role_id Int
-  role Role @relation(fields: [role_id], references: [id])
-  forms Form[]
-  answers Answer[]
+  last_name  String?
+  password   String
+  status     Status @default(ACTIVE)
+  role_id    Int
+  role       Role @relation(fields: [role_id], references: [id])
+  forms      Form[]
+  answers    Answer[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
   @@map("users")
 }
 model Form {
-  id Int @id @default(autoincrement())
-  title String
+  id          Int @id @default(autoincrement())
+  title       String
   description String?
-  is_public Boolean @default(true)
-  invites String[]
-  user_id Int
-  user User @relation(fields: [user_id], references: [id])
-  questions Question[]
-  answers Answer[]
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  is_public   Boolean @default(true)
+  invites     String[]
+  user_id     Int
+  user        User @relation(fields: [user_id], references: [id])
+  questions   Question[]
+  answers     Answer[]
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
   @@map("forms")
 }
 model Question {
-  id Int @id @default(autoincrement())
-  type String
-  question String
-  options String[]
-  required Boolean
-  form_id Int
-  answers Answer[]
-  form Form @relation(fields: [form_id], references: [id])
+  id         Int @id @default(autoincrement())
+  type       String
+  question   String
+  options    String[]
+  required   Boolean
+  form_id    Int
+  answers    Answer[]
+  form       Form @relation(fields: [form_id], references: [id])
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
   @@map("questions")
 }
 model Answer {
-  id Int @id @default(autoincrement())
-  user_id Int
-  form_id Int
+  id          Int @id @default(autoincrement())
+  user_id     Int
+  form_id     Int
   question_id Int
-  user User @relation(fields: [user_id], references: [id])
-  form Form @relation(fields: [form_id], references: [id])
-  question Question @relation(fields: [question_id], references: [id])
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  user        User @relation(fields: [user_id], references: [id])
+  form        Form @relation(fields: [form_id], references: [id])
+  question    Question @relation(fields: [question_id], references: [id])
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
   @@map("answers")
 }
