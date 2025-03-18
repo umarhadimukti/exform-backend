@@ -2,6 +2,18 @@
 GET http://localhost:3002/api/v1/users
 Accept: application/json
 
+### CREATE NEW USER
+POST http://localhost:3002/api/v2/users
+Content-Type: application/json
+
+{
+    "first_name": "Umar",
+    "last_name": "Hadi Mukti",
+    "email": "umarhad@gmail.com",
+    "password": "test1234",
+    "role_id": 1
+}
+
 ### CREATE ROLE
 POST http://localhost:3002/api/v1/roles
 Content-Type: application/json
@@ -10,3 +22,4 @@ Content-Type: application/json
     "name": "user-regular",
     "description": "role untuk user regular."
 }
+

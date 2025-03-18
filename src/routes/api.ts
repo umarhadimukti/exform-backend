@@ -1,11 +1,19 @@
 import { Request, Response, Router } from "express";
 import { prisma } from "../db/connection";
+import UserController from "../controllers/UserController";
 
 const router: Router = Router();
 
 router.get('/users', async (req: Request, res: Response) => {
-    const allUsers = await prisma.user.findMany();
-    console.log(allUsers);
+    await UserController.index(req, res);
+});
+
+router.get('/users/:id', async (req: Request, res: Response) => {
+    await UserController.show(req, res);
+});
+
+router.post('/users', async (req: Request, res: Response) => {
+    await UserController.create(req, res);
 });
 
 router.post('/roles', async (req: Request, res: Response) => {
