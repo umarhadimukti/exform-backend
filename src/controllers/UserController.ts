@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../db/connection";
-
+import { User } from "../validators/UserValidator";
+import { z } from "zod";
 class UserController
 {
     public async index (req: Request, res: Response) {
@@ -31,7 +32,7 @@ class UserController
         } catch (err) {
             return res.status(400).json({
                 status: false,
-                message: `failed to get user ❌: ${ err instanceof Error ? err.message:err }`,
+                message: `failed to get user: ${ err instanceof Error ? err.message:err }`,
             });
         }
     }
@@ -40,19 +41,34 @@ class UserController
         const payload = req.body;
 
         try {
+            const validated = User.parse(payload);
+
             const newUser = await prisma.user.create({
-                data: payload,
+                data: validated,
             });
 
             return res.status(201).json({
                 status: true,
-                message: `success to store new user ✅`,
+                message: `success to store new user.`,
                 data: newUser,
             });
-        } catch (err) {
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                const formattedErrors = error.errors.map(err => {
+                    return {
+                        field: err.path.join('.'),
+                        message: err.message,
+                    };
+                });
+                return res.status(400).json({
+                    status: false,
+                    message: formattedErrors,
+                });
+            }
+            
             return res.status(400).json({
                 status: false,
-                message: `failed to store new user ❌: ${ err instanceof Error ? err.message:err }`,
+                message: `failed to store new user: ${ error instanceof Error ? error.message:error }`,
             });
         }
 
