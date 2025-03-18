@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+/*
+  @model - struktur model
+**/
+enum Status {
+  active
+  inactive
+}
+model Role {
+  id Int @id @default(autoincrement())
+  name String
+  description String?
+}
+model User {
+  id Int @id @default(autoincrement())
+  email String @unique
+  firstName String
+  lastName String?
+  password String
+  status Status @default(active)
+  roleId Int
+}
+model Form {
+  id Int @id @default(autoincrement())
+  userId Int
+  questionId Int
+  title String
+  description String?
+  public Boolean @default(true)
+  invites String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model Question {
+  id Int @id @default(autoincrement())
+  type String
+  question String
+  options String[]
+  required Boolean
+}
+model Answer {
+  id Int @id @default(autoincrement())
+  userId Int
+  formId Int
+  questionId Int
+}
