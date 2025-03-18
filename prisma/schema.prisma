@@ -26,31 +26,41 @@ model Role {
   name String
   description String?
   users User[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("roles")
 }
 model User {
   id Int @id @default(autoincrement())
   email String @unique
-  firstName String
-  lastName String?
+  first_name String
+  last_name String?
   password String
   status Status @default(ACTIVE)
-  roleId Int
-  role Role @relation(fields: [roleId], references: [id])
+  role_id Int
+  role Role @relation(fields: [role_id], references: [id])
   forms Form[]
+  answers Answer[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("users")
 }
 model Form {
   id Int @id @default(autoincrement())
   title String
   description String?
-  public Boolean @default(true)
+  is_public Boolean @default(true)
   invites String[]
-  userId Int
-  user User @relation(fields: [userId], references: [id])
-  questionId Int
-  questions Question @relation(fields: [questionId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  user_id Int
+  user User @relation(fields: [user_id], references: [id])
+  questions Question[]
+  answers Answer[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
+  @@map("forms")
 }
 model Question {
   id Int @id @default(autoincrement())
@@ -58,13 +68,24 @@ model Question {
   question String
   options String[]
   required Boolean
-  form Form[]
+  form_id Int
   answers Answer[]
+  form Form @relation(fields: [form_id], references: [id])
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("questions")
 }
 model Answer {
   id Int @id @default(autoincrement())
-  userId Int
-  formId Int
-  questionId Int
-  question Question @relation(fields: [questionId], references: [id])
+  user_id Int
+  form_id Int
+  question_id Int
+  user User @relation(fields: [user_id], references: [id])
+  form Form @relation(fields: [form_id], references: [id])
+  question Question @relation(fields: [question_id], references: [id])
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("answers")
 }
