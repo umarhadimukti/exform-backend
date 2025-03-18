@@ -1,0 +1,12 @@
+### GET REQUEST USER
+GET http://localhost:3002/api/v1/users
+Accept: application/json
+
+### CREATE ROLE
+POST http://localhost:3002/api/v1/roles
+Content-Type: application/json
+
+{
+    "name": "user-regular",
+    "description": "role untuk user regular."
+}

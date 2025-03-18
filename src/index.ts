@@ -1,6 +1,7 @@
-import express, { Express, Request, Response } from "express";
-import dotenv from 'dotenv';
+import express, { Express } from "express";
+import dotenv from "dotenv";
 import connectDB from "./db/connection";
+import apiRoutes from "./routes/api";
 
 dotenv.config();
 
@@ -13,5 +14,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // connection to db
 connectDB();
+
+// api routes
+app.use('/api/v1', apiRoutes);
 
 app.listen(port, () => console.log(`server running at port ${port} 👾`));
