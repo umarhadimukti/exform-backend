@@ -1,12 +1,14 @@
 import { Request, Response } from "express";
 import { prisma } from "../db/connection";
 import { User } from "../validators/userValidator";
-import { hash, genSalt } from "bcryptjs";
 import { z } from "zod";
 import CustomError from "../libs/errors/CustomError";
+import AuthService from "../libs/services/AuthService";
 
 class AuthController
 {
+    protected authService = new AuthService;
+
     public async register (req: Request, res: Response) {
         const payloadUser = req.body;
 
@@ -18,7 +20,7 @@ class AuthController
                 throw new CustomError('email already registered.', 409);
             }
 
-            const hashPassword = await hash(validated.password, await genSalt(10));
+            const hashPassword = await this.authService.hashPassword(validated.password);
             
             const newUser = await prisma.user.create({
                 data: {
@@ -30,11 +32,11 @@ class AuthController
                 },
             });
 
+
             return res.status(201).json({
                 status: true,
                 message: 'user successfully registered.',
                 data: newUser,
-
             })
         } catch (error) {
             if (error instanceof z.ZodError) {

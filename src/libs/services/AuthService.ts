@@ -1,7 +1,7 @@
 import { Secret, JwtPayload, SignOptions, sign, verify } from 'jsonwebtoken';
 import { hash, genSalt, compare } from 'bcryptjs';
 
-class AuthService
+export default class AuthService
 {
     public async hashPassword (password: string): Promise<string>
     {
