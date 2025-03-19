@@ -3,6 +3,7 @@ import { prisma } from "../db/connection";
 import { User } from "../validators/userValidator";
 import { hash, genSalt } from "bcryptjs";
 import { z } from "zod";
+import CustomError from "../libs/errors/CustomError";
 
 class AuthController
 {
@@ -11,6 +12,11 @@ class AuthController
 
         try {
             let validated = User.parse(payloadUser);
+
+            const isExistsUser = await prisma.user.findUnique({ where: { email: validated.email } });
+            if (isExistsUser) {
+                throw new CustomError('email already registered.', 409);
+            }
 
             const hashPassword = await hash(validated.password, await genSalt(10));
             
@@ -45,7 +51,14 @@ class AuthController
                 });
             }
 
-            return res.status(400).json({
+            if (error instanceof CustomError) {
+                return res.status(error.statusCode).json({
+                    status: false,
+                    message: `failed to register new user: ${error.message}`,
+                });
+            }
+
+            return res.status(500).json({
                 status: false,
                 message: `failed to register new user: ${error instanceof Error ? error.message : error}`,
             });

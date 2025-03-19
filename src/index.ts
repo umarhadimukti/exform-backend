@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import connectDB from "./db/connection";
 import apiRoutes from "./routes/api";
 import authRoutes from "./routes/auth";
+import { notFoundHandler } from "./middlewares/notFound";
 
 dotenv.config();
 
@@ -21,5 +22,8 @@ app.use('/api/v1', apiRoutes);
 
 // auth routes
 app.use(authRoutes);
+
+// handle 404 (not found route)
+app.use(notFoundHandler);
 
 app.listen(port, () => console.log(`server running at port ${port} 👾`));
