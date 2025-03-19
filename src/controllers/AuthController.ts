@@ -4,12 +4,18 @@ import { User } from "../validators/userValidator";
 import { z } from "zod";
 import CustomError from "../libs/errors/CustomError";
 import AuthService from "../libs/services/AuthService";
+import dotenv from "dotenv";
+
+dotenv.config;
 
 class AuthController
 {
     protected authService = new AuthService;
+    protected static readonly JWT_ACCESS_TOKEN = process.env.JWT_ACCESS_TOKEN as string || 'super duper secret access token';
+    protected static readonly JWT_REFRESH_TOKEN = process.env.JWT_REFRESH_TOKEN as string || 'super duper secret refresh token';
 
-    public async register (req: Request, res: Response) {
+    public async register (req: Request, res: Response)
+    {
         const payloadUser = req.body;
 
         try {
@@ -32,11 +38,15 @@ class AuthController
                 },
             });
 
+            const accessToken = this.authService.generateToken(newUser, AuthController.JWT_ACCESS_TOKEN, { expiresIn: '1h' });
+            const refreshToken = this.authService.generateToken(newUser, AuthController.JWT_REFRESH_TOKEN, { expiresIn: '1h' });
 
             return res.status(201).json({
                 status: true,
                 message: 'user successfully registered.',
                 data: newUser,
+                accessToken,
+                refreshToken,
             })
         } catch (error) {
             if (error instanceof z.ZodError) {
@@ -65,6 +75,46 @@ class AuthController
                 message: `failed to register new user: ${error instanceof Error ? error.message : error}`,
             });
         }
+    }
+
+    public async login (req: Request, res: Response): Promise<Response>
+    {
+        try {
+            const { email: emailPayload, password: passwordPayload } = req.body;
+
+            if (!emailPayload || !passwordPayload) {
+                throw new CustomError('email and password are required.', 400);
+            }
+    
+            const user = await prisma.user.findUnique({ where: { email: emailPayload } });
+            if (!user) {
+                throw new CustomError('invalid email or password.', 404);
+            }
+
+            if (!await this.authService.comparePassword(passwordPayload, user.password)) {
+                throw new CustomError('invalid email or password.', 401);
+            }
+
+            const accessToken = this.authService.generateToken(user, AuthController.JWT_ACCESS_TOKEN, { expiresIn: '1h' });
+            const refreshToken = this.authService.generateToken(user, AuthController.JWT_REFRESH_TOKEN, { expiresIn: '1h' });
+
+            return res.status(200).json({
+                status: true,
+                message: 'login success.',
+                userInformation: {
+                    fullName: `${user.first_name} ${user.last_name ?? ''}`.trim(),
+                    email: user.email,
+                },
+                accessToken,
+                refreshToken,
+            })
+        } catch (error) {
+            return res.status(error instanceof CustomError ? error.statusCode : 500).json({
+                status: false,
+                message: `failed to login: ${error instanceof Error ? error.message : error}`,
+            });
+        }
+
     }
 }
 
