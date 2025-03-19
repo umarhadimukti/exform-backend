@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../db/connection";
-import { User } from "../validators/UserValidator";
+import { User } from "../validators/userValidator";
 import { z } from "zod";
 class UserController
 {
