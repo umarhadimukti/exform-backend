@@ -1,5 +1,6 @@
 import { Secret, JwtPayload, SignOptions, sign, verify } from 'jsonwebtoken';
 import { hash, genSalt, compare } from 'bcryptjs';
+import CustomError from '../errors/CustomError';
 
 export default class AuthService
 {
@@ -26,7 +27,7 @@ export default class AuthService
         try {
             return verify(token, secretKey);
         } catch (err) {
-            throw new Error(`failed to verify token: invalid or expired token.`);
+            throw new CustomError(`invalid or expired token.`, 400);
         }
     }
 }

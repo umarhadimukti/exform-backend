@@ -5,6 +5,7 @@ import { z } from "zod";
 import CustomError from "../libs/errors/CustomError";
 import AuthService from "../libs/services/AuthService";
 import dotenv from "dotenv";
+import { JwtPayload } from "jsonwebtoken";
 
 dotenv.config;
 
@@ -96,7 +97,7 @@ class AuthController
             }
 
             const accessToken = this.authService.generateToken(user, AuthController.JWT_ACCESS_TOKEN, { expiresIn: '1h' });
-            const refreshToken = this.authService.generateToken(user, AuthController.JWT_REFRESH_TOKEN, { expiresIn: '1h' });
+            const refreshToken = this.authService.generateToken(user, AuthController.JWT_REFRESH_TOKEN, { expiresIn: '7d' });
 
             return res.status(200).json({
                 status: true,
@@ -114,7 +115,40 @@ class AuthController
                 message: `failed to login: ${error instanceof Error ? error.message : error}`,
             });
         }
+    }
 
+    public async refreshToken (req: Request, res: Response): Promise<Response>
+    {
+        try {
+            const { token: tokenPayload } = req.body;
+
+            if (!tokenPayload) {
+                throw new CustomError('token doesn\'t exists.', 400);
+            }
+
+            const verifiedToken: JwtPayload | unknown = this.authService.verifyToken(tokenPayload, AuthController.JWT_REFRESH_TOKEN);
+
+            if (!verifiedToken || typeof verifiedToken !== 'object') {
+                throw new CustomError('invalid or expired token.', 400);
+            }
+
+            const { iat, exp, ...userData } = verifiedToken as JwtPayload;
+
+            const accessToken = this.authService.generateToken(userData, AuthController.JWT_ACCESS_TOKEN, { expiresIn: '1h' });
+            const refreshToken = this.authService.generateToken(userData, AuthController.JWT_REFRESH_TOKEN, { expiresIn: '7d' });
+
+            return res.status(200).json({
+                status: true,
+                message: 'token successfully refreshed.',
+                accessToken,
+                refreshToken,
+            });
+        } catch (error) {
+            return res.status(error instanceof CustomError ? error.statusCode : 500).json({
+                status: false,
+                message: `failed to refresh token: ${error instanceof Error ? error.message : error}`,
+            });
+        }
     }
 }
 
