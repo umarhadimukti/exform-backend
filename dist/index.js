@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const connection_1 = __importDefault(require("./db/connection"));
 const api_1 = __importDefault(require("./routes/api"));
+const auth_1 = __importDefault(require("./routes/auth"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.DEFAULT_PORT || 3002;
@@ -17,4 +18,6 @@ app.use(express_1.default.urlencoded({ extended: true }));
 (0, connection_1.default)();
 // api routes
 app.use('/api/v1', api_1.default);
+// auth routes
+app.use(auth_1.default);
 app.listen(port, () => console.log(`server running at port ${port} 👾`));
