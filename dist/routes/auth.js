@@ -9,4 +9,10 @@ const router = (0, express_1.Router)();
 router.post('/register', async (req, res) => {
     await AuthController_1.default.register(req, res);
 });
+router.post('/login', async (req, res) => {
+    await AuthController_1.default.login(req, res);
+});
+router.post('/refresh-token', async (req, res) => {
+    await AuthController_1.default.refreshToken(req, res);
+});
 exports.default = router;
