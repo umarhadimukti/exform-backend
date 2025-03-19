@@ -45,7 +45,7 @@ class AuthController
                     });
                 });
 
-                return res.status(400).json({
+                return res.status(428).json({
                     status: false,
                     message: formattedErrors,
                 });

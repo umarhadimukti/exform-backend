@@ -1,5 +1,4 @@
 import { Request, Response, Router } from "express";
-import { prisma } from "../db/connection";
 import AuthController from "../controllers/AuthController";
 
 const router: Router = Router();
