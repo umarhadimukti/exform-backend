@@ -25,7 +25,13 @@ export default function jwtAuth ()
                 throw new CustomError('unauthorized', 403);
             }
 
-            const token: string = authorization.split(' ')[1]; // Bearer <token>
+            const tokenParts: string[] = authorization.split(' ');
+            
+            if (tokenParts.length !== 2 || tokenParts[0] !== 'Bearer') {
+                throw new CustomError('invalid token format.', 400);
+            }
+
+            const token: string = tokenParts[1]; // Bearer <token>
 
             const verified: JwtPayload | unknown = authService.verifyToken(token, JWT_ACCESS_TOKEN);
 
