@@ -6,12 +6,6 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-declare module "express" {
-    interface Request {
-        user?: JwtPayload | string,
-    }
-}
-
 export default function jwtAuth ()
 {
     const authService = new AuthService;
