@@ -6,8 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const connection_1 = require("../db/connection");
 const UserController_1 = __importDefault(require("../controllers/UserController"));
+const jwtAuth_1 = __importDefault(require("../middlewares/jwtAuth"));
 const router = (0, express_1.Router)();
-router.get('/users', async (req, res) => {
+router.get('/users', (0, jwtAuth_1.default)(), async (req, res) => {
     await UserController_1.default.index(req, res);
 });
 router.get('/users/:id', async (req, res) => {
