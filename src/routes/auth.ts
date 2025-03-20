@@ -1,5 +1,6 @@
 import { Request, Response, Router } from "express";
 import AuthController from "../controllers/AuthController";
+import jwtAuth from "../middlewares/jwtAuth";
 
 const router: Router = Router();
 
@@ -11,7 +12,7 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
     await AuthController.login(req, res);
 });
 
-router.post('/refresh-token', async (req: Request, res: Response): Promise<void> => {
+router.post('/refresh-token', jwtAuth(), async (req: Request, res: Response): Promise<void> => {
     await AuthController.refreshToken(req, res);
 });
 
