@@ -17,7 +17,7 @@ export default function jwtAuth ()
     const authService = new AuthService;
     const JWT_ACCESS_TOKEN: string = process.env.JWT_ACCESS_TOKEN as string || 'asfdsfsdfw234';
 
-    return async (req: Request, res: Response, next: NextFunction) => {
+    return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { authorization } = req.headers;
 
@@ -25,7 +25,7 @@ export default function jwtAuth ()
                 throw new CustomError('unauthorized', 403);
             }
 
-            const token: string = authorization.split(' ')[0]; // Bearer <token>
+            const token: string = authorization.split(' ')[1]; // Bearer <token>
 
             const verified: JwtPayload | unknown = authService.verifyToken(token, JWT_ACCESS_TOKEN);
 
@@ -33,12 +33,12 @@ export default function jwtAuth ()
                 throw new CustomError('invalid or expired token', 400);
             }
 
-            req.user = verified;
+            req.user = verified as JwtPayload;
 
             next();
 
         } catch (error) {
-            return res
+            res
                 .status(error instanceof CustomError ? error.statusCode : 500)
                 .json({
                     status: false,

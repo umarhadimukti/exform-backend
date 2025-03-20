@@ -1,10 +1,11 @@
 import { Request, Response, Router } from "express";
 import { prisma } from "../db/connection";
 import UserController from "../controllers/UserController";
+import jwtAuth from "../middlewares/jwtAuth";
 
 const router: Router = Router();
 
-router.get('/users', async (req: Request, res: Response) => {
+router.get('/users', jwtAuth(),  async (req: Request, res: Response) => {
     await UserController.index(req, res);
 });
 
