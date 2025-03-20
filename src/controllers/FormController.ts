@@ -12,12 +12,15 @@ class FormController
             if (!user) {
                 throw new CustomError('invalid user.', 400);
             }
+
+            console.log(payload)
             
             const form = await prisma.form.create({
                 data: {
                     title: payload.title,
                     description: payload.description,
                     user_id: user.id,
+                    invites: payload.invites,
                 }
             });
 
