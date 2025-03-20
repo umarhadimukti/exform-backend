@@ -54,7 +54,7 @@ class FormController
                 }
             });
 
-            return res.status(201).json({
+            return res.status(200).json({
                 status: true,
                 data: form,
             })
