@@ -4,7 +4,7 @@ import CustomError from "../libs/errors/CustomError";
 
 class FormController
 {
-    public async create(req: Request, res: Response)
+    public async create(req: Request, res: Response): Promise<Response>
     {
         try {
             const { body: payload, user } = req;
@@ -27,6 +27,35 @@ class FormController
             return res.status(201).json({
                 status: true,
                 message: `user successfully created.`,
+                data: form,
+            })
+        } catch (error) {
+            return res
+                .status(error instanceof CustomError ? error.statusCode : 500)
+                .json({
+                    status: false,
+                    message: `failed to create new form: ${error instanceof Error ? error.message : error}`,
+                });
+        }
+    }
+
+    public async show (req: Request, res: Response): Promise<Response>
+    {
+        try {
+            const { id: formId } = req.params;
+
+            if (!formId) {
+                throw new CustomError('invalid form id.', 400);
+            }
+
+            const form = await prisma.form.findFirst({
+                where: {
+                    id: Number(formId)
+                }
+            });
+
+            return res.status(201).json({
+                status: true,
                 data: form,
             })
         } catch (error) {
