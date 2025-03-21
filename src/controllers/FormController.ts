@@ -158,6 +158,48 @@ class FormController
                 });
         }
     }
+
+    public async delete (req: Request, res: Response): Promise<Response>
+    {
+        try {
+            const { id: formId } = req.params;
+            const { user } = req;
+
+            if (!formId || isNaN(parseInt(formId, 10))) {
+                throw new CustomError('invalid form id.', 400);
+            }
+
+            const form = await prisma.form.findFirst({
+                where: {
+                    id: parseInt(formId, 10),
+                    user_id: user?.id,
+                }
+            });
+
+            if (!form) {
+                throw new CustomError('form not found.', 404);
+            }
+
+            const formToBeDeleted = await prisma.form.delete({
+                where: {
+                    id: parseInt(formId, 10),
+                    user_id: user?.id,
+                }
+            });
+
+            return res.status(200).json({
+                status: true,
+                message: `form '${formToBeDeleted.title}' successfully deleted.`,
+            })
+        } catch (error) {
+            return res
+                .status(error instanceof CustomError ? error.statusCode : 500)
+                .json({
+                    status: false,
+                    message: `failed to delete form: ${ error instanceof Error ? error.message : error }`,
+                });
+        }
+    }
 }
 
 export default new FormController;

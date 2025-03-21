@@ -23,6 +23,10 @@ router.put('/form/:id', jwtAuth(), async (req: Request, res: Response) => {
     await FormController.update(req, res);
 });
 
+router.delete('/form/:id', jwtAuth(), async (req: Request, res: Response) => {
+    await FormController.delete(req, res);
+});
+
 router.get('/users', jwtAuth(),  async (req: Request, res: Response) => {
     await UserController.index(req, res);
 });
