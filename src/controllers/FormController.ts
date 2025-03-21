@@ -34,7 +34,7 @@ class FormController
             }
 
             // find paginate
-            const findPaginate = async (take: number, skip: number): Promise<Form[]> => {
+            const findPaginate = async (skip: number, take: number): Promise<Form[]> => {
                 return await prisma.form.findMany({
                     where: {
                         user_id: user?.id,

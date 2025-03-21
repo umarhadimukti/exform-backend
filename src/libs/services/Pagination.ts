@@ -1,12 +1,9 @@
-import { Form } from "@prisma/client";
-import { prisma } from "../../db/connection";
-
 export class Pagination<M>
 {
     public async paginate (
         model: M[],
         findTotal: () => Promise<number>,
-        findPaginate: (page: number, limit: number) => Promise<M[]>,
+        findPaginate: (skip: number, take: number) => Promise<M[]>,
         data: { page: number, limit: number }
     ): Promise<object>
     {
@@ -35,7 +32,9 @@ export class Pagination<M>
         const totalPage = Math.ceil(totalData / data.limit);
 
         // retrieved paginate data
-        const paginatedData = await findPaginate(data.page, skip);
+        const paginatedData = await findPaginate(skip, data.limit)
+
+        console.log(paginatedData)
 
         return {
             data: paginatedData,
