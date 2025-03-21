@@ -1,41 +1,52 @@
+import { Form } from "@prisma/client";
 import { prisma } from "../../db/connection";
 
-export class Pagination
+export class Pagination<M>
 {
-    public async paginate (page: number = 1, limit: number = 10, userId: number): Promise<object>
+    public async paginate (
+        model: M[],
+        findTotal: () => Promise<number>,
+        findPaginate: (page: number, limit: number) => Promise<M[]>,
+        data: { page: number, limit: number }
+    ): Promise<object>
     {
-        const skip: number = (page - 1) * limit;
 
-        const totalForms = await prisma.form.count({
-            where: {
-                user_id: userId,
-            }
-        });
+        if (model.length === 0) {
+            return {
+                data: [],
+                currentPage: null,
+                pageSize: null,
+                totalData: null,
+                totalPage: null,
+                hasNextPage: null,
+                hasPrevPage: null,
+                nextPage: null,
+                prevPage: null,
+            };
+        }
 
-        const formsPaginate = await prisma.form.findMany({
-            where: {
-                user_id: userId,
-            },
-            take: limit,
-            skip: skip,
-            orderBy: {
-                created_at: 'desc',
-            }
-        });
+        // skip (eg. (page = 2 - 1) * limit = 5 --> result: 5) ==> start with position 5
+        const skip: number = (data.page - 1) * data.limit;
 
-        const totalPage = Math.ceil(totalForms / limit);
+        // find total the data
+        const totalData: number = await findTotal();
 
+        // calculate total page (formula: total data / limit per page) ==> 23 / 5 = 5
+        const totalPage = Math.ceil(totalData / data.limit);
+
+        // retrieved paginate data
+        const paginatedData = await findPaginate(data.page, skip);
 
         return {
-            data: formsPaginate,
-            currentPage: page,
-            pageSize: limit,
-            totalForms,
+            data: paginatedData,
+            currentPage: data.page,
+            pageSize: data.limit,
+            totalData,
             totalPage,
-            hasNextPage: page < totalPage,
-            hasPrevPage: page > 1,
-            nextPage: page < totalPage ? page + 1 : null,
-            prevPage: page > 1 ? page - 1 : null,
+            hasNextPage: data.page < totalPage,
+            hasPrevPage: data.page > 1,
+            nextPage: data.page < totalPage ? data.page + 1 : null,
+            prevPage: data.page > 1 ? data.page - 1 : null,
         };
     }
 }

@@ -4,29 +4,54 @@ import CustomError from "../libs/errors/CustomError";
 import { formSchema } from "../validators/formValidator";
 import { z } from "zod";
 import { Pagination } from "../libs/services/Pagination";
+import { Form } from "@prisma/client";
 
 class FormController
 {
     public async index (req: Request, res: Response): Promise<Response>
     {
-        const pagination = new Pagination();
+        const pagination = new Pagination<Form>();
 
         try {
             const { user } = req;
-            const { page, size } = req.query;
+            const { page, limit } = req.query;
 
-            const pageQuery: number = parseInt(page as string, 1) || 1;
-            const sizeQuery: number = parseInt(size as string, 10) || 10;
+            const pageQuery: number = parseInt(page as string, 10) || 1;
+            const limitQuery: number = parseInt(limit as string, 10) || 5;
 
-
-            if (pageQuery < 1 || sizeQuery < 1) {
+            if (pageQuery < 1 || limitQuery < 1) {
                 throw new CustomError('page or size invalid', 400);
             }
 
-            const paginationResult = pagination.paginate(pageQuery, sizeQuery, user?.id);
+            // user forms
+            const forms: Form[] = await prisma.form.findMany({
+                where: { user_id: user?.id },
+            });
+
+            // find total row
+            const findTotal = async (): Promise<number> => {
+                return await prisma.form.count({ where: { user_id: user?.id } });
+            }
+
+            // find paginate
+            const findPaginate = async (take: number, skip: number): Promise<Form[]> => {
+                return await prisma.form.findMany({
+                    where: {
+                        user_id: user?.id,
+                    },
+                    take,
+                    skip,
+                    orderBy: {
+                        created_at: 'desc',
+                    },
+                })
+            }
+
+            const paginationResult = await pagination.paginate(forms, findTotal, findPaginate, { page: pageQuery, limit: limitQuery });
 
             return res.status(200).json({
                 status: true,
+                ...paginationResult,
             });
         } catch (error) {
             return res
