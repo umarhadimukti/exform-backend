@@ -7,6 +7,10 @@ import FormController from "../controllers/FormController";
 const router: Router = Router();
 
 
+router.get('/forms', jwtAuth(), async (req: Request, res: Response) => {
+    await FormController.index(req, res);
+})
+
 router.get('/form/:id', jwtAuth(), async (req: Request, res: Response) => {
     await FormController.show(req, res);
 })

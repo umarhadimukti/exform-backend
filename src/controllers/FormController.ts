@@ -6,7 +6,31 @@ import { z } from "zod";
 
 class FormController
 {
-    public async create(req: Request, res: Response): Promise<Response>
+    public async index (req: Request, res: Response): Promise<Response>
+    {
+        try {
+            const forms = await prisma.form.findMany({
+                orderBy: {
+                    created_at: 'desc'
+                }
+            });
+
+            return res.status(200).json({
+                status: true,
+                length: forms.length,
+                data: forms,
+            })
+        } catch (error) {
+            return res
+                .status(error instanceof CustomError ? error.statusCode : 500)
+                .json({
+                    status: false,
+                    message: `failed to create new form: ${error instanceof Error ? error.message : error}`,
+                });
+        }
+    }
+
+    public async create (req: Request, res: Response): Promise<Response>
     {
         try {
             const { body: payload, user } = req;
