@@ -3,28 +3,31 @@ import { prisma } from "../db/connection";
 import CustomError from "../libs/errors/CustomError";
 import { formSchema } from "../validators/formValidator";
 import { z } from "zod";
+import { Pagination } from "../libs/services/Pagination";
 
 class FormController
 {
     public async index (req: Request, res: Response): Promise<Response>
     {
+        const pagination = new Pagination();
+
         try {
             const { user } = req;
+            const { page, size } = req.query;
 
-            const forms = await prisma.form.findMany({
-                where: {
-                    user_id: user?.id,
-                },
-                orderBy: {
-                    created_at: 'desc'
-                }
-            });
+            const pageQuery: number = parseInt(page as string, 1) || 1;
+            const sizeQuery: number = parseInt(size as string, 10) || 10;
+
+
+            if (pageQuery < 1 || sizeQuery < 1) {
+                throw new CustomError('page or size invalid', 400);
+            }
+
+            const paginationResult = pagination.paginate(pageQuery, sizeQuery, user?.id);
 
             return res.status(200).json({
                 status: true,
-                length: forms.length,
-                data: forms,
-            })
+            });
         } catch (error) {
             return res
                 .status(error instanceof CustomError ? error.statusCode : 500)
