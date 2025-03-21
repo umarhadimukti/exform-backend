@@ -55,16 +55,13 @@ class FormController
 
             const form = await prisma.form.findFirst({
                 where: {
-                    id: Number(formId)
+                    id: parseInt(formId, 10),
+                    user_id: user.id,
                 }
             });
 
             if (!form) {
                 throw new CustomError('form not found.', 404);
-            }
-
-            if (user.id !== form.user_id) {
-                throw new CustomError('unauthorized.', 403);
             }
 
             return res.status(200).json({
