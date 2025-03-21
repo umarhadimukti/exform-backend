@@ -10,13 +10,15 @@ class FormController
     {
         try {
             const { body: payload, user } = req;
+
+            const validated = formSchema.parse(payload);
             
             const form = await prisma.form.create({
                 data: {
-                    title: payload.title,
-                    description: payload.description,
+                    title: validated.title,
+                    description: validated.description,
                     user_id: user?.id,
-                    invites: payload.invites,
+                    invites: validated.invites,
                 }
             });
 
