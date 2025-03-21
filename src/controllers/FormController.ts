@@ -43,9 +43,14 @@ class FormController
     {
         try {
             const { id: formId } = req.params;
+            const { user } = req;
 
-            if (!formId) {
+            if (!formId || isNaN(parseInt(formId, 10))) {
                 throw new CustomError('invalid form id.', 400);
+            }
+
+            if (!user) {
+                throw new CustomError('unauthorized.', 403);
             }
 
             const form = await prisma.form.findFirst({
@@ -53,6 +58,14 @@ class FormController
                     id: Number(formId)
                 }
             });
+
+            if (!form) {
+                throw new CustomError('form not found.', 404);
+            }
+
+            if (user.id !== form.user_id) {
+                throw new CustomError('unauthorized.', 403);
+            }
 
             return res.status(200).json({
                 status: true,
