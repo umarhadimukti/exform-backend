@@ -38,9 +38,11 @@ export class Pagination<M>
         let prevPages: number[] = [];
         let nextPages: number[] = [];
 
+        // push two previous values
         for (let startPrev = Math.max(1, data.page - 2); startPrev < data.page; startPrev++) {
             prevPages.push(startPrev);
         }
+        // push two next values
         for (let startNext = data.page + 1; startNext <= Math.min(totalPage, data.page + 2); startNext++) {
             nextPages.push(startNext);
         }
