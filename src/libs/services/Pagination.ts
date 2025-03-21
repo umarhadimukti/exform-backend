@@ -17,12 +17,12 @@ export class Pagination<M>
                 totalPage: null,
                 hasNextPage: null,
                 hasPrevPage: null,
-                nextPage: null,
-                prevPage: null,
+                nextPage: [],
+                prevPage: [],
             };
         }
 
-        // skip (eg. (page = 2 - 1) * limit = 5 --> result: 5) ==> start with position 5
+        // skip (eg. (page = 2 - 1) * limit = 5 --> result: 5) ==> start with index 5 (position 6)
         const skip: number = (data.page - 1) * data.limit;
 
         // find total the data
@@ -34,7 +34,16 @@ export class Pagination<M>
         // retrieved paginate data
         const paginatedData = await findPaginate(skip, data.limit)
 
-        console.log(paginatedData)
+        // init prev, next
+        let prevPages: number[] = [];
+        let nextPages: number[] = [];
+
+        for (let startPrev = Math.max(1, data.page - 2); startPrev < data.page; startPrev++) {
+            prevPages.push(startPrev);
+        }
+        for (let startNext = data.page + 1; startNext <= Math.min(totalPage, data.page + 2); startNext++) {
+            nextPages.push(startNext);
+        }
 
         return {
             data: paginatedData,
@@ -44,8 +53,8 @@ export class Pagination<M>
             totalPage,
             hasNextPage: data.page < totalPage,
             hasPrevPage: data.page > 1,
-            nextPage: data.page < totalPage ? data.page + 1 : null,
-            prevPage: data.page > 1 ? data.page - 1 : null,
+            nextPage: nextPages,
+            prevPage: prevPages,
         };
     }
 }
