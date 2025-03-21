@@ -9,7 +9,12 @@ class FormController
     public async index (req: Request, res: Response): Promise<Response>
     {
         try {
+            const { user } = req;
+
             const forms = await prisma.form.findMany({
+                where: {
+                    user_id: user?.id,
+                },
                 orderBy: {
                     created_at: 'desc'
                 }
