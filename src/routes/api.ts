@@ -3,9 +3,13 @@ import { prisma } from "../db/connection";
 import UserController from "../controllers/UserController";
 import jwtAuth from "../middlewares/jwtAuth";
 import FormController from "../controllers/FormController";
+import QuestionController from "../controllers/QuestionController";
 
 const router: Router = Router();
 
+router.post('/form/:formId/question', jwtAuth(), async (req: Request, res: Response) => {
+    await QuestionController.create(req, res);
+});
 
 router.get('/forms', jwtAuth(), async (req: Request, res: Response) => {
     await FormController.index(req, res);
