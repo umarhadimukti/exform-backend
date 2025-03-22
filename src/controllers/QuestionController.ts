@@ -2,6 +2,9 @@ import { JwtPayload } from "jsonwebtoken";
 import { prisma } from "../db/connection";
 import CustomError from "../libs/errors/CustomError";
 import { Request, Response } from "express";
+import { questionSchema } from "../validators/questionValidator";
+import { ZodError } from "zod";
+import { Question } from "@prisma/client";
 
 class QuestionController
 {
@@ -28,18 +31,38 @@ class QuestionController
                 throw new CustomError('form not valid.', 400);
             }
 
-            // const newQuestion = await prisma.form.create({
-            //     data: {
+            const validated = questionSchema.parse(payload);
 
-            //     }
-            // });
+            const newQuestion = await prisma.question.create({
+                data: {
+                    type: validated.type,
+                    question: validated.question,
+                    options: validated.options,
+                    required: validated.required,
+                    form_id: userForm.id,
+                }
+            });
             
             return res.status(201).json({
                 status: true,
                 message: 'question successfully created.',
-                data: {},
+                data: newQuestion,
             })
         } catch (error) {
+            if (error instanceof ZodError) {
+                const formattedErrors = error.errors.map(err => {
+                    return ({
+                        field: err.path.join('.'),
+                        message: err.message,
+                    });
+                });
+
+                return res.status(428).json({
+                    status: false,
+                    message: formattedErrors,
+                });
+            }
+
             return res
                 .status(error instanceof CustomError ? error.statusCode : 500)
                 .json({
