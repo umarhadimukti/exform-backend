@@ -4,10 +4,26 @@ import CustomError from "../libs/errors/CustomError";
 import { Request, Response } from "express";
 import { questionSchema } from "../validators/questionValidator";
 import { ZodError } from "zod";
-import { Question } from "@prisma/client";
 
 class QuestionController
 {
+    public async index (req: Request, res: Response): Promise<Response>
+    {
+        try {
+            
+            return res.status(200).json({
+                status: true,
+                data: {},
+            });
+        } catch (error) {
+            return res
+                .status(error instanceof CustomError ? error.statusCode : 500)
+                .json({
+                    status: false,
+                    message: `failed to get questions: ${error instanceof Error ? error.message : error}`,
+                });
+        }
+    }
 
     public async create (req: Request, res: Response): Promise<Response>
     {

@@ -58,7 +58,7 @@ class FormController
                 .status(error instanceof CustomError ? error.statusCode : 500)
                 .json({
                     status: false,
-                    message: `failed to create new form: ${error instanceof Error ? error.message : error}`,
+                    message: `failed to get forms: ${error instanceof Error ? error.message : error}`,
                 });
         }
     }
@@ -81,7 +81,7 @@ class FormController
 
             return res.status(201).json({
                 status: true,
-                message: `user successfully created.`,
+                message: `form successfully created.`,
                 data: form,
             })
         } catch (error) {
@@ -140,7 +140,7 @@ class FormController
             
             return res.status(200).json({
                 status: true,
-                message: 'user successfully updated.',
+                message: 'form successfully updated.',
                 data: updatedForm,
             })
         } catch (error) {
@@ -148,7 +148,7 @@ class FormController
                 .status(error instanceof CustomError ? error.statusCode : 500)
                 .json({
                     status: false,
-                    message: `failed to update user: ${error instanceof Error ? error.message : error}`,
+                    message: `failed to update form: ${error instanceof Error ? error.message : error}`,
                 });
         }
     }
