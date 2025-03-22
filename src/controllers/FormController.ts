@@ -47,7 +47,7 @@ class FormController
                 })
             }
 
-            const paginationResult = await pagination.paginate(forms, findTotal, findPaginate, { page: pageQuery, limit: limitQuery });
+            const paginationResult = await pagination.paginate(forms, findTotal, findPaginate, { page: pageQuery, limit: limitQuery || 5 });
 
             return res.status(200).json({
                 status: true,
