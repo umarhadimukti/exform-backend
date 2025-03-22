@@ -7,6 +7,10 @@ import QuestionController from "../controllers/QuestionController";
 
 const router: Router = Router();
 
+router.get('/form/:formId/questions', jwtAuth(), async (req: Request, res: Response) => {
+    await QuestionController.index(req, res);
+});
+
 router.post('/form/:formId/question', jwtAuth(), async (req: Request, res: Response) => {
     await QuestionController.create(req, res);
 });

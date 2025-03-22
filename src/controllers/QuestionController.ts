@@ -4,16 +4,61 @@ import CustomError from "../libs/errors/CustomError";
 import { Request, Response } from "express";
 import { questionSchema } from "../validators/questionValidator";
 import { ZodError } from "zod";
+import { Pagination } from "../libs/services/Pagination";
+import { Question } from "@prisma/client";
 
 class QuestionController
 {
     public async index (req: Request, res: Response): Promise<Response>
     {
+        const pagination = new Pagination<Question>();
         try {
-            
+            const { formId } = req.params;
+            const { page, limit } = req.query;
+
+            if (!formId || isNaN(parseInt(formId, 10))) {
+                throw new CustomError('form id is invalid.', 400);
+            }
+
+            const pageQuery: number = parseInt(page as string, 10) || 1;
+            const limitQuery: number = parseInt(limit as string, 10) || 5;
+
+            if (pageQuery < 1 || limitQuery < 1) {
+                throw new CustomError('page or size invalid', 400);
+            }
+
+            const questionsForm = await prisma.question.findMany({
+                where: {
+                    form_id: parseInt(formId, 10),
+                }
+            });
+
+            const findTotal = async () => {
+                return await prisma.question.count({
+                    where: {
+                        form_id: parseInt(formId, 10),
+                    }
+                });
+            }
+
+            const findPaginate = async (skip: number, take: number) => {
+                return await prisma.question.findMany({
+                    where: {
+                        form_id: parseInt(formId, 10),
+                    },
+                    skip,
+                    take,
+                    orderBy: {
+                        id: 'asc'
+                    },
+                });
+            }
+
+            const paginationResult = await pagination.paginate(questionsForm, findTotal, findPaginate, { page: pageQuery, limit: limitQuery });
+
             return res.status(200).json({
                 status: true,
-                data: {},
+                ...paginationResult,
             });
         } catch (error) {
             return res
