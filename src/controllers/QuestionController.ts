@@ -1,3 +1,5 @@
+import { JwtPayload } from "jsonwebtoken";
+import { prisma } from "../db/connection";
 import CustomError from "../libs/errors/CustomError";
 import { Request, Response } from "express";
 
@@ -8,12 +10,29 @@ class QuestionController
     {
         try {
             const { formId } = req.params;
+            const payload = req.body;
+            const user: JwtPayload | { id: number } | undefined = req.user;
 
             if (!formId || isNaN(parseInt(formId, 10))) {
                 throw new CustomError('invalid form id.', 400);
             }
 
-            console.log(formId)
+            const userForm = await prisma.form.findUnique({
+                where: {
+                    id: parseInt(formId, 10),
+                    user_id: user?.id,
+                }
+            })
+
+            if (!userForm) {
+                throw new CustomError('form not valid.', 400);
+            }
+
+            // const newQuestion = await prisma.form.create({
+            //     data: {
+
+            //     }
+            // });
             
             return res.status(201).json({
                 status: true,
