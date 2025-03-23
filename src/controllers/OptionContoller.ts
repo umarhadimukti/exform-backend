@@ -9,7 +9,7 @@ class OptionController
     {
         try {
             const { formId, questionId } = req.params;
-            const payload = req.body;
+            const { options } = req.body;
             const user: JwtPayload | { id: number } | undefined = req.user;
 
             const parsedFormId: number = parseInt(formId, 10);
@@ -30,11 +30,23 @@ class OptionController
                 throw new CustomError('form not valid.', 400);
             }
 
+            if (!Array.isArray(options)) {
+                throw new CustomError('options must be an array.', 428);
+            }
+
+            const updateOption = await prisma.question.update({
+                where: { id: parsedQuestionId },
+                data: {
+                    options: { push: [...options] }, // push new option from payload
+                },
+            });
+
             return res
                 .status(201)
                 .json({
                     status: false,
-                    message: `option successfully created.`,
+                    message: `option successfully added.`,
+                    data: updateOption,
                 });
         } catch (error) {
             return res
