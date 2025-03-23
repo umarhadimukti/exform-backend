@@ -4,8 +4,13 @@ import UserController from "../controllers/UserController";
 import jwtAuth from "../middlewares/jwtAuth";
 import FormController from "../controllers/FormController";
 import QuestionController from "../controllers/QuestionController";
+import OptionContoller from "../controllers/OptionContoller";
 
 const router: Router = Router();
+
+router.post('/form/:formId/question/:questionId/option', jwtAuth(), async (req: Request, res: Response) => {
+    await OptionContoller.create(req, res);
+});
 
 router.get('/form/:formId/questions', jwtAuth(), async (req: Request, res: Response) => {
     await QuestionController.index(req, res);
