@@ -53,7 +53,46 @@ class OptionController
                 .status(error instanceof CustomError ? error.statusCode : 500)
                 .json({
                     status: false,
-                    message: `failed to create new option: ${error instanceof Error ? error.message : error}`,
+                    message: `failed to add new option: ${error instanceof Error ? error.message : error}`,
+                });
+        }
+    }
+
+    public async delete (req: Request, res: Response): Promise<Response>
+    {
+        try {
+            const { formId, questionId, option } = req.params;
+
+            const parsedFormId: number = parseInt(formId, 10);
+            const parsedQuestionId: number = parseInt(questionId, 10);
+
+            if (isNaN(parsedFormId) ||  isNaN(parsedQuestionId)) {
+                throw new CustomError('form id or question id is invalid.', 400);
+            }
+
+            const existingQuestion = await prisma.question.findFirst({
+                where: {
+                    id: parsedQuestionId,
+                    form_id: parsedFormId,
+                },
+            });
+
+            if (!existingQuestion) {
+                throw new CustomError('question doesn\'t belong to the specified form', 404);
+            }
+
+            // const updatedOptions = await prisma.question.
+
+            return res.status(200).json({
+                status: true,
+                message: `option successfully deleted.`,
+            });
+        } catch (error) {
+            return res
+                .status(error instanceof CustomError ? error.statusCode : 500)
+                .json({
+                    status: false,
+                    message: `failed to delete option: ${error instanceof Error ? error.message : error}`,
                 });
         }
     }
