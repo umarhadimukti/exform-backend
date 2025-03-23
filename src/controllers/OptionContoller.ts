@@ -115,7 +115,9 @@ class OptionController
 
             const existingOptions = Array.isArray(existingQuestion?.options) ? existingQuestion?.options as any[] : [];
 
+            
             const filteredOptions = existingOptions.filter(opt => opt.id !== optionId);
+            console.log(filteredOptions)
 
             if (filteredOptions.length === existingOptions.length) {
                 throw new CustomError('options not found.', 404);
@@ -125,7 +127,9 @@ class OptionController
                 where: {
                     id: parsedQuestionId,
                 },
-                data: filteredOptions as any,
+                data: {
+                    options: filteredOptions
+                },
             });
 
             return res.status(200).json({

@@ -96,7 +96,7 @@ class AuthController
                 throw new CustomError('invalid email or password.', 401);
             }
 
-            const accessToken = this.authService.generateToken(user, AuthController.JWT_ACCESS_TOKEN, { expiresIn: '1h' });
+            const accessToken = this.authService.generateToken(user, AuthController.JWT_ACCESS_TOKEN, { expiresIn: '1d' });
             const refreshToken = this.authService.generateToken(user, AuthController.JWT_REFRESH_TOKEN, { expiresIn: '7d' });
 
             return res.status(200).json({
