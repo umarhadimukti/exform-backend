@@ -6,6 +6,7 @@ import { questionSchema } from "../validators/questionValidator";
 import { ZodError } from "zod";
 import { Pagination } from "../libs/services/Pagination";
 import { Question } from "@prisma/client";
+import { randomUUID } from "crypto";
 
 class QuestionController
 {
@@ -100,11 +101,20 @@ class QuestionController
                 throw new CustomError(`field 'type' must be (${ this.allowedTypes.join(', ') })`, 428);
             }
 
+            const optionsWithId = validated.options.map((opt, index) => {
+                return {
+                    id: randomUUID(),
+                    option: opt,
+                };
+            });
+
+            console.log(optionsWithId)
+
             const newQuestion = await prisma.question.create({
                 data: {
                     type: validated.type,
                     question: validated.question,
-                    options: validated.options,
+                    options: optionsWithId,
                     required: validated.required,
                     form_id: userForm.id,
                 }

@@ -54,7 +54,7 @@ router.post('/users', jwtAuth(), async (req: Request, res: Response) => {
     await UserController.create(req, res);
 });
 
-router.post('/roles', jwtAuth(), async (req: Request, res: Response) => {
+router.post('/roles', async (req: Request, res: Response) => {
     const payload = req.body;
     const result = await prisma.role.create({
         data: payload
