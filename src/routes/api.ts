@@ -11,7 +11,7 @@ const router: Router = Router();
 router.post('/form/:formId/question/:questionId/option', jwtAuth(), async (req: Request, res: Response) => {
     await OptionContoller.create(req, res);
 });
-router.delete('/for/:formId/question/:qeustionId/option/:option', jwtAuth(), async (req: Request, res: Response) => {
+router.delete('/form/:formId/question/:questionId/option/:optionId', jwtAuth(), async (req: Request, res: Response) => {
     await OptionContoller.delete(req, res);
 });
 

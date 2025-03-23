@@ -81,13 +81,25 @@ class OptionController
     public async delete (req: Request, res: Response): Promise<Response>
     {
         try {
-            const { formId, questionId, option } = req.params;
+            const { formId, questionId, optionId } = req.params;
+            const { user } = req;
 
             const parsedFormId: number = parseInt(formId, 10);
             const parsedQuestionId: number = parseInt(questionId, 10);
 
             if (isNaN(parsedFormId) ||  isNaN(parsedQuestionId)) {
                 throw new CustomError('form id or question id is invalid.', 400);
+            }
+
+            const userForm = await prisma.form.findUnique({
+                where: {
+                    id: parsedFormId,
+                    user_id: user?.id,
+                }
+            });
+
+            if (!userForm) {
+                throw new CustomError('form not valid.', 400);
             }
 
             const existingQuestion = await prisma.question.findFirst({
@@ -101,11 +113,25 @@ class OptionController
                 throw new CustomError('question doesn\'t belong to the specified form', 404);
             }
 
-            // const updatedOptions = await prisma.question.
+            const existingOptions = Array.isArray(existingQuestion?.options) ? existingQuestion?.options as any[] : [];
+
+            const filteredOptions = existingOptions.filter(opt => opt.id !== optionId);
+
+            if (filteredOptions.length === existingOptions.length) {
+                throw new CustomError('options not found.', 404);
+            }
+
+            const updatedQuestion = await prisma.question.update({
+                where: {
+                    id: parsedQuestionId,
+                },
+                data: filteredOptions as any,
+            });
 
             return res.status(200).json({
                 status: true,
                 message: `option successfully deleted.`,
+                data: updatedQuestion,
             });
         } catch (error) {
             return res
