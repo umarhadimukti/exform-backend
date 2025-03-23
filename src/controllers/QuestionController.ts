@@ -108,8 +108,6 @@ class QuestionController
                 };
             });
 
-            console.log(optionsWithId)
-
             const newQuestion = await prisma.question.create({
                 data: {
                     type: validated.type,

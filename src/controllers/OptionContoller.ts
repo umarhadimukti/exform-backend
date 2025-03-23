@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import CustomError from "../libs/errors/CustomError";
 import { prisma } from "../db/connection";
 import { JwtPayload } from "jsonwebtoken";
+import { randomUUID } from "crypto";
 
 class OptionController
 {
@@ -34,10 +35,29 @@ class OptionController
                 throw new CustomError('options must be an array.', 428);
             }
 
+            const existingQuestion = await prisma.question.findUnique({
+                where: { id: parsedQuestionId },
+                select: { options: true },
+            });
+
+            if (!existingQuestion) {
+                throw new CustomError('question not valid.', 400);
+            }
+
+            const optionsWithId = options.map((opt) => {
+                return {
+                    id: randomUUID(),
+                    option: opt,
+                };
+            });
+
+            const existingOptions = existingQuestion?.options || [];
+            const allOptions = Array.isArray(existingOptions) ? [...existingOptions, ...optionsWithId] : optionsWithId;
+
             const updateOption = await prisma.question.update({
                 where: { id: parsedQuestionId },
                 data: {
-                    options: { push: [...options] }, // push new option from payload
+                    options: allOptions, // push new option from payload
                 },
             });
 
