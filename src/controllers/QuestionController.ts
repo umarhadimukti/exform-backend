@@ -133,6 +133,86 @@ class QuestionController
         }
     }
 
+    public async update (req: Request, res: Response): Promise<Response>
+    {
+        try {
+            const { formId, questionId } = req.params;
+            const payload = req.body;
+
+            const parsedFormId: number = parseInt(formId, 10);
+            const parsedQuestionId: number = parseInt(questionId, 10);
+
+            if (isNaN(parsedFormId) ||  isNaN(parsedQuestionId)) {
+                throw new CustomError('form id or question id is invalid.', 400);
+            }
+
+            const existingQuestion = await prisma.question.findFirst({
+                where: {
+                    id: parsedQuestionId,
+                    form_id: parsedFormId,
+                },
+            });
+
+            if (!existingQuestion) {
+                throw new CustomError('question doesn\'t belong to the specified form', 404);
+            }
+
+            const question = await prisma.question.update({
+                where: {
+                    id: parseInt(questionId, 10),
+                    form_id: parseInt(formId, 10),
+                },
+                data: payload,
+            });
+
+            if (!question) {
+                throw new CustomError('invalid input question.', 400);
+            }
+
+            return res.status(200).json({
+                status: true,
+                message: 'question successfully updated.',
+                data: question,
+            });
+        } catch (error) {
+            return res
+                .status(error instanceof CustomError ? error.statusCode : 500)
+                .json({
+                    status: false,
+                    message: `failed to update question: ${error instanceof Error ? error.message : error}`,
+                });
+        }
+    }
+
+    public async delete (req: Request, res: Response): Promise<Response>
+    {
+        try {
+            const { questionId } = req.params;
+
+            if (!questionId || isNaN(parseInt(questionId, 10))) {
+                throw new CustomError('question id is invalid.', 400);
+            }
+
+            const questionToBeDeleted = await prisma.question.delete({
+                where: {
+                    id: parseInt(questionId, 10),
+                },
+            });
+
+            return res.status(200).json({
+                status: true,
+                message: `question '${questionToBeDeleted.question}' successfully deleted.`,
+            });
+        } catch (error) {
+            return res
+                .status(error instanceof CustomError ? error.statusCode : 500)
+                .json({
+                    status: false,
+                    message: `failed to delete question: ${error instanceof Error ? error.message : error}`,
+                });
+        }
+    }
+
 }
 
 export default new QuestionController;

@@ -10,27 +10,28 @@ const router: Router = Router();
 router.get('/form/:formId/questions', jwtAuth(), async (req: Request, res: Response) => {
     await QuestionController.index(req, res);
 });
-
 router.post('/form/:formId/question', jwtAuth(), async (req: Request, res: Response) => {
     await QuestionController.create(req, res);
+});
+router.put('/form/:formId/question/:questionId', jwtAuth(), async (req: Request, res: Response) => {
+    await QuestionController.update(req, res);
+});
+router.delete('/form/:formId/question/:questionId', jwtAuth(), async (req: Request, res: Response) => {
+    await QuestionController.delete(req, res);
 });
 
 router.get('/forms', jwtAuth(), async (req: Request, res: Response) => {
     await FormController.index(req, res);
 })
-
 router.get('/form/:id', jwtAuth(), async (req: Request, res: Response) => {
     await FormController.show(req, res);
 })
-
 router.post('/form', jwtAuth(), async (req: Request, res: Response) => {
     await FormController.create(req, res);
 });
-
 router.put('/form/:id', jwtAuth(), async (req: Request, res: Response) => {
     await FormController.update(req, res);
 });
-
 router.delete('/form/:id', jwtAuth(), async (req: Request, res: Response) => {
     await FormController.delete(req, res);
 });
@@ -38,11 +39,9 @@ router.delete('/form/:id', jwtAuth(), async (req: Request, res: Response) => {
 router.get('/users', jwtAuth(),  async (req: Request, res: Response) => {
     await UserController.index(req, res);
 });
-
 router.get('/users/:id', jwtAuth(), async (req: Request, res: Response) => {
     await UserController.show(req, res);
 });
-
 router.post('/users', jwtAuth(), async (req: Request, res: Response) => {
     await UserController.create(req, res);
 });
