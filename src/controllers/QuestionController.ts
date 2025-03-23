@@ -9,6 +9,8 @@ import { Question } from "@prisma/client";
 
 class QuestionController
 {
+    protected readonly allowedTypes: string[] = ['text', 'checkbox', 'radio', 'email', 'dropdown'];
+
     public async index (req: Request, res: Response): Promise<Response>
     {
         const pagination = new Pagination<Question>();
@@ -155,6 +157,10 @@ class QuestionController
 
             if (!existingQuestion) {
                 throw new CustomError('question doesn\'t belong to the specified form', 404);
+            }
+
+            if (!this.allowedTypes.includes(payload.type)) {
+                throw new CustomError('field \'type\' must be (text, dropdown, email, checkbox, radio)', 428);
             }
 
             const question = await prisma.question.update({
