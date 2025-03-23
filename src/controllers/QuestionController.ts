@@ -187,17 +187,36 @@ class QuestionController
     public async delete (req: Request, res: Response): Promise<Response>
     {
         try {
-            const { questionId } = req.params;
+            const { formId, questionId } = req.params;
 
-            if (!questionId || isNaN(parseInt(questionId, 10))) {
-                throw new CustomError('question id is invalid.', 400);
+            const parsedFormId: number = parseInt(formId, 10);
+            const parsedQuestionId: number = parseInt(questionId, 10);
+
+            if (isNaN(parsedFormId) ||  isNaN(parsedQuestionId)) {
+                throw new CustomError('form id or question id is invalid.', 400);
+            }
+
+            const existingQuestion = await prisma.question.findFirst({
+                where: {
+                    id: parsedQuestionId,
+                    form_id: parsedFormId,
+                },
+            });
+
+            if (!existingQuestion) {
+                throw new CustomError('question doesn\'t belong to the specified form', 404);
             }
 
             const questionToBeDeleted = await prisma.question.delete({
                 where: {
-                    id: parseInt(questionId, 10),
+                    id: parsedQuestionId,
+                    form_id: parsedFormId,
                 },
             });
+
+            if (!questionToBeDeleted) {
+                throw new CustomError('invalid input question.', 400);
+            }
 
             return res.status(200).json({
                 status: true,
