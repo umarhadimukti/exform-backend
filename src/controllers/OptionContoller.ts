@@ -64,7 +64,7 @@ class OptionController
             return res
                 .status(201)
                 .json({
-                    status: false,
+                    status: true,
                     message: `option successfully added.`,
                     data: updateOption,
                 });
