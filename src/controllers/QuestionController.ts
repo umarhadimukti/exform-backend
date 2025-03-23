@@ -96,6 +96,10 @@ class QuestionController
 
             const validated = questionSchema.parse(payload);
 
+            if (!this.allowedTypes.includes(validated.type)) {
+                throw new CustomError(`field 'type' must be (${ this.allowedTypes.join(', ') })`, 428);
+            }
+
             const newQuestion = await prisma.question.create({
                 data: {
                     type: validated.type,
@@ -160,7 +164,7 @@ class QuestionController
             }
 
             if (!this.allowedTypes.includes(payload.type)) {
-                throw new CustomError('field \'type\' must be (text, dropdown, email, checkbox, radio)', 428);
+                throw new CustomError(`field 'type' must be (${ this.allowedTypes.join(', ') })`, 428);
             }
 
             const question = await prisma.question.update({
