@@ -187,7 +187,7 @@ class FormController
                 .status(error instanceof CustomError ? error.statusCode : 500)
                 .json({
                     status: false,
-                    message: `failed to create new form: ${error instanceof Error ? error.message : error}`,
+                    message: `failed to show form: ${error instanceof Error ? error.message : error}`,
                 });
         }
     }
@@ -195,23 +195,32 @@ class FormController
     public async showToUser (req: Request, res: Response): Promise<Response>
     {
         try {
-            const { id: formId } = req.params;
+            const { formId } = req.params;
             const { user } = req;
 
-            if (!formId || isNaN(parseInt(formId, 10))) {
+            const parsedFormId: number = parseInt(formId, 10);
+
+            if (!formId || isNaN(parsedFormId)) {
                 throw new CustomError('invalid form id.', 400);
             }
 
             const form = await prisma.form.findFirst({
                 where: {
-                    id: parseInt(formId, 10),
-                    user_id: user?.id,
+                    id: parsedFormId,
                 }
             });
 
             if (!form) {
                 throw new CustomError('form not found.', 404);
             }
+
+            if (user?.id !== form.user_id || !form.is_public) {
+                if (!form.invites.includes(user?.email)) {
+                    throw new CustomError('invalid user.', 401);
+                }
+            }
+            
+            form.invites = [];
 
             return res.status(200).json({
                 status: true,
@@ -222,7 +231,7 @@ class FormController
                 .status(error instanceof CustomError ? error.statusCode : 500)
                 .json({
                     status: false,
-                    message: `failed to create new form: ${error instanceof Error ? error.message : error}`,
+                    message: `failed to show form: ${error instanceof Error ? error.message : error}`,
                 });
         }
     }
