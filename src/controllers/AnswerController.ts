@@ -6,6 +6,49 @@ import { answerSchema } from "../validators/answerValidator";
 class AnswerController
 {
 
+    public async index (req: Request, res: Response): Promise<Response>
+    {
+        try {
+            const { user } = req;
+            const { formId } = req.params;
+
+            const parsedFormId: number = parseInt(formId, 10);
+
+            if (isNaN(parsedFormId)) throw new CustomError('invalid form id.', 400);
+
+            const isUserForm = await prisma.form.findFirst({
+                where: { user_id: user?.id }
+            });
+
+            if (!isUserForm) throw new CustomError('invalid form.', 400);
+
+            const questionForm = await prisma.question.findMany({
+                where: { form_id: parsedFormId }
+            });
+
+            if (!questionForm) throw new CustomError('form not valid.', 400);
+
+            const answerQuestion = await prisma.answer.findMany({
+                where: { question_id: { in: questionForm['id'] } }
+            });
+
+            console.log(answerQuestion);
+
+
+            return res.status(200).json({
+                status: true,
+                data: {},
+            });
+        } catch (error) {
+            return res
+                .status(error instanceof CustomError ? error.statusCode : 500)
+                .json({
+                    status: false,
+                    message: `failed to get answers: ${error instanceof Error ? error.message : error}`,
+                });
+        }
+    }
+
     public async create (req: Request, res: Response): Promise<Response>
     {
         try {

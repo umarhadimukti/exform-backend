@@ -9,6 +9,10 @@ import AnswerController from "../controllers/AnswerController";
 
 const router: Router = Router();
 
+// answers routes
+router.get('/form/:formId/answers', jwtAuth(), async (req: Request, res: Response) => {
+    await AnswerController.index(req, res);
+});
 router.post('/form/:formId/question/:questionId/answer', jwtAuth(), async (req: Request, res: Response) => {
     await AnswerController.create(req, res);
 });
