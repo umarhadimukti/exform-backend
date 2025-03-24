@@ -192,6 +192,41 @@ class FormController
         }
     }
 
+    public async showToUser (req: Request, res: Response): Promise<Response>
+    {
+        try {
+            const { id: formId } = req.params;
+            const { user } = req;
+
+            if (!formId || isNaN(parseInt(formId, 10))) {
+                throw new CustomError('invalid form id.', 400);
+            }
+
+            const form = await prisma.form.findFirst({
+                where: {
+                    id: parseInt(formId, 10),
+                    user_id: user?.id,
+                }
+            });
+
+            if (!form) {
+                throw new CustomError('form not found.', 404);
+            }
+
+            return res.status(200).json({
+                status: true,
+                data: form,
+            })
+        } catch (error) {
+            return res
+                .status(error instanceof CustomError ? error.statusCode : 500)
+                .json({
+                    status: false,
+                    message: `failed to create new form: ${error instanceof Error ? error.message : error}`,
+                });
+        }
+    }
+
     public async delete (req: Request, res: Response): Promise<Response>
     {
         try {

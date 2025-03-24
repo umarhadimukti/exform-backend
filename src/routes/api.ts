@@ -8,6 +8,11 @@ import OptionContoller from "../controllers/OptionContoller";
 
 const router: Router = Router();
 
+// show form route (for user)
+router.get('/form/:formId/users', jwtAuth(), async (req: Request, res: Response) => {
+    await FormController.showToUser(req, res);
+});
+
 // option routes
 router.post('/form/:formId/question/:questionId/option', jwtAuth(), async (req: Request, res: Response) => {
     await OptionContoller.create(req, res);
