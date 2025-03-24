@@ -27,22 +27,22 @@ class AnswerController
             }
 
             const questionForm = await prisma.question.findMany({
-                where: { form_id: parsedFormId }
-            });
-
-            if (questionForm.length === 0) {
-                throw new CustomError('no question found for this form.', 404);
-            }
-
-            const questionIds: number[] = questionForm.map(q => q.id);
-
-            const answerQuestion = await prisma.answer.findMany({
-                where: { question_id: { in: questionIds }, form_id: parsedFormId }
+                where: { form_id: parsedFormId },
+                select: {
+                    id: true,
+                    form_id: true,
+                    question: true,
+                    answers: {
+                        select: {
+                            value: true,
+                        }
+                    }
+                }
             });
 
             return res.status(200).json({
                 status: true,
-                data: answerQuestion,
+                data: questionForm,
             });
         } catch (error) {
             return res
