@@ -67,13 +67,13 @@ class AnswerController
             if (isNaN(parsedFormId) || isNaN(parsedQuestionId)) throw new CustomError('form id or question id is invalid.', 400);
 
             const isUserForm = await prisma.form.findFirst({
-                where: { user_id: user?.id }
+                where: { id: parsedFormId, user_id: user?.id }
             });
 
             if (!isUserForm) throw new CustomError('invalid form.', 400);
 
             const isQuestionForm = await prisma.question.findFirst({
-                where: { form_id: parsedFormId },
+                where: { id: parsedQuestionId, form_id: parsedFormId },
             })
 
             if (!isQuestionForm) throw new CustomError('invalid question.', 400);
