@@ -5,8 +5,13 @@ import jwtAuth from "../middlewares/jwtAuth";
 import FormController from "../controllers/FormController";
 import QuestionController from "../controllers/QuestionController";
 import OptionContoller from "../controllers/OptionContoller";
+import AnswerController from "../controllers/AnswerController";
 
 const router: Router = Router();
+
+router.post('/form/:formId/question/:questionId/answer', jwtAuth(), async (req: Request, res: Response) => {
+    await AnswerController.create(req, res);
+});
 
 // show form route (for user)
 router.get('/form/:formId/users', jwtAuth(), async (req: Request, res: Response) => {

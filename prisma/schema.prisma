@@ -81,6 +81,7 @@ model Answer {
   user_id     Int
   form_id     Int
   question_id Int
+  value       String
   user        User @relation(fields: [user_id], references: [id])
   form        Form @relation(fields: [form_id], references: [id])
   question    Question @relation(fields: [question_id], references: [id])
