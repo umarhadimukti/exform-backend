@@ -19,9 +19,7 @@ class FormController
             const pageQuery: number = parseInt(page as string, 10) || 1;
             const limitQuery: number = parseInt(limit as string, 10) || 5;
 
-            if (pageQuery < 1 || limitQuery < 1) {
-                throw new CustomError('page or size invalid', 400);
-            }
+            if (pageQuery < 1 || limitQuery < 1) throw new CustomError('page or size invalid', 400);
 
             // user forms
             const forms: Form[] = await prisma.form.findMany({
@@ -36,23 +34,16 @@ class FormController
             // find paginate
             const findPaginate = async (skip: number, take: number): Promise<Form[]> => {
                 return await prisma.form.findMany({
-                    where: {
-                        user_id: user?.id,
-                    },
+                    where: { user_id: user?.id },
                     take,
                     skip,
-                    orderBy: {
-                        created_at: 'desc',
-                    },
+                    orderBy: { created_at: 'desc' },
                 })
             }
 
             const paginationResult = await pagination.paginate(forms, findTotal, findPaginate, { page: pageQuery, limit: limitQuery || 5 });
 
-            return res.status(200).json({
-                status: true,
-                ...paginationResult,
-            });
+            return res.status(200).json({ status: true, ...paginationResult });
         } catch (error) {
             return res
                 .status(error instanceof CustomError ? error.statusCode : 500)
@@ -115,20 +106,13 @@ class FormController
             const { id: formId } = req.params;
             const { body: payload, user } = req;
 
-            if (!formId || isNaN(parseInt(formId, 10))) {
-                throw new CustomError('invalid form id.', 400);
-            }
+            if (!formId || isNaN(parseInt(formId, 10))) throw new CustomError('invalid form id.', 400);
 
             const form = await prisma.form.findFirst({
-                where: {
-                    id: parseInt(formId),
-                    user_id: user?.id,
-                }
+                where: { id: parseInt(formId), user_id: user?.id }
             })
 
-            if (!form) {
-                throw new CustomError('form not found.', 404);
-            }
+            if (!form) throw new CustomError('form not found.', 404); 
 
             const updatedForm = await prisma.form.update({
                 where: {
