@@ -14,22 +14,30 @@ class AnswerController
 
             const parsedFormId: number = parseInt(formId, 10);
 
-            if (isNaN(parsedFormId)) throw new CustomError('invalid form id.', 400);
+            if (isNaN(parsedFormId)) {
+                throw new CustomError('invalid form id.', 400);
+            }
 
-            const isUserForm = await prisma.form.findFirst({
-                where: { user_id: user?.id }
+            const isUserForm = await prisma.form.findMany({
+                where: { id: parsedFormId, user_id: user?.id },
             });
 
-            if (!isUserForm) throw new CustomError('invalid form.', 400);
+            if (!isUserForm) {
+                throw new CustomError('this form doesn\'t belong to the user.', 403);
+            }
 
             const questionForm = await prisma.question.findMany({
                 where: { form_id: parsedFormId }
             });
 
-            if (!questionForm) throw new CustomError('form not valid.', 400);
+            if (questionForm.length === 0) {
+                throw new CustomError('no question found for this form.', 404);
+            }
+
+            const questionIds: number[] = questionForm.map(q => q.id);
 
             const answerQuestion = await prisma.answer.findMany({
-                where: { question_id: { in: questionForm['id'] } }
+                where: { question_id: { in: questionIds }, form_id: parsedFormId }
             });
 
             return res.status(200).json({
