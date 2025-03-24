@@ -8,6 +8,7 @@ import OptionContoller from "../controllers/OptionContoller";
 
 const router: Router = Router();
 
+// option routes
 router.post('/form/:formId/question/:questionId/option', jwtAuth(), async (req: Request, res: Response) => {
     await OptionContoller.create(req, res);
 });
@@ -18,6 +19,7 @@ router.delete('/form/:formId/question/:questionId/option/:optionId', jwtAuth(), 
     await OptionContoller.delete(req, res);
 });
 
+// question routes
 router.get('/form/:formId/questions', jwtAuth(), async (req: Request, res: Response) => {
     await QuestionController.index(req, res);
 });
@@ -31,6 +33,7 @@ router.delete('/form/:formId/question/:questionId', jwtAuth(), async (req: Reque
     await QuestionController.delete(req, res);
 });
 
+// form routes
 router.get('/forms', jwtAuth(), async (req: Request, res: Response) => {
     await FormController.index(req, res);
 })
@@ -47,6 +50,7 @@ router.delete('/form/:id', jwtAuth(), async (req: Request, res: Response) => {
     await FormController.delete(req, res);
 });
 
+// user routes
 router.get('/users', jwtAuth(),  async (req: Request, res: Response) => {
     await UserController.index(req, res);
 });
@@ -57,6 +61,7 @@ router.post('/users', jwtAuth(), async (req: Request, res: Response) => {
     await UserController.create(req, res);
 });
 
+// role routes
 router.post('/roles', async (req: Request, res: Response) => {
     const payload = req.body;
     const result = await prisma.role.create({
