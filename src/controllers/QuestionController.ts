@@ -104,9 +104,10 @@ class QuestionController
             const optionsWithId = validated.options.map((opt, index) => {
                 return {
                     id: randomUUID(),
-                    option: opt,
+                    option: opt.option,
                 };
             });
+            console.log(optionsWithId)
 
             const newQuestion = await prisma.question.create({
                 data: {

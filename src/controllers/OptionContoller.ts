@@ -47,7 +47,7 @@ class OptionController
             const optionsWithId = options.map((opt) => {
                 return {
                     id: randomUUID(),
-                    option: opt,
+                    option: opt.option,
                 };
             });
 
@@ -74,6 +74,80 @@ class OptionController
                 .json({
                     status: false,
                     message: `failed to add new option: ${error instanceof Error ? error.message : error}`,
+                });
+        }
+    }
+
+    public async update (req: Request, res: Response): Promise<Response>
+    {
+        try {
+            const { formId, questionId, optionId } = req.params;
+            const { user } = req;
+            const payload = req.body;
+
+            const parsedFormId: number = parseInt(formId, 10);
+            const parsedQuestionId: number = parseInt(questionId, 10);
+
+            if (isNaN(parsedFormId) ||  isNaN(parsedQuestionId)) {
+                throw new CustomError('form id or question id is invalid.', 400);
+            }
+
+            const userForm = await prisma.form.findUnique({
+                where: {
+                    id: parsedFormId,
+                    user_id: user?.id,
+                }
+            });
+
+            if (!userForm) {
+                throw new CustomError('form not valid.', 400);
+            }
+
+            const existingQuestion = await prisma.question.findFirst({
+                where: {
+                    id: parsedQuestionId,
+                    form_id: parsedFormId,
+                },
+            });
+
+            if (!existingQuestion) {
+                throw new CustomError('question doesn\'t belong to the specified form', 404);
+            }
+
+            const existingOptions = Array.isArray(existingQuestion?.options) ? existingQuestion?.options as any[] : [];
+
+            const optionIndex = existingOptions.findIndex(opt => opt.id === optionId);
+
+            if (optionIndex === -1 ) {
+                throw new CustomError('options not found.', 404);
+            }
+
+            const updatedOptions = [...existingOptions];
+            updatedOptions[optionIndex] = {
+                ...updatedOptions[optionIndex],
+                option: payload.option,
+            };
+
+            const updatedQuestion = await prisma.question.update({
+                where: {
+                    id: parsedQuestionId,
+                },
+                data: {
+                    options: updatedOptions,
+                },
+            });
+
+            return res.status(200).json({
+                status: true,
+                message: `option successfully updated.`,
+                data: updatedQuestion,
+            });
+        } catch (error) {
+            return res
+                .status(error instanceof CustomError ? error.statusCode : 500)
+                .json({
+                    status: false,
+                    message: `failed to update option: ${error instanceof Error ? error.message : error}`,
                 });
         }
     }
