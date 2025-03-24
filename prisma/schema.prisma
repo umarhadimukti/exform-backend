@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,80 +7,83 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-/*
-  @model - struktur model
-**/
-enum Status {
-  ACTIVE
-  INACTIVE
-}
 model Role {
-  id          Int      @default(autoincrement()) @id
+  id          Int      @id @default(autoincrement())
   name        String
   description String?
-  users       User[]
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
+  users       User[]
 
   @@map("roles")
 }
+
 model User {
-  id         Int @id @default(autoincrement())
-  email      String @unique
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
   first_name String
   last_name  String?
   password   String
-  status     Status @default(ACTIVE)
+  status     Status   @default(ACTIVE)
   role_id    Int
-  role       Role @relation(fields: [role_id], references: [id])
-  forms      Form[]
-  answers    Answer[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  answers    Answer[]
+  forms      Form[]
+  role       Role     @relation(fields: [role_id], references: [id])
 
   @@map("users")
 }
+
 model Form {
-  id          Int @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   title       String
   description String?
-  is_public   Boolean @default(true)
+  is_public   Boolean    @default(true)
   invites     String[]
   user_id     Int
-  user        User @relation(fields: [user_id], references: [id])
-  questions   Question[]
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
   answers     Answer[]
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  user        User       @relation(fields: [user_id], references: [id])
+  questions   Question[]
 
   @@map("forms")
 }
+
 model Question {
-  id         Int @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   type       String
   question   String
-  options    Json? @default("[]")
+  options    Json?    @default("[]")
   required   Boolean
   form_id    Int
-  answers    Answer[]
-  form       Form @relation(fields: [form_id], references: [id])
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  answers    Answer[]
+  form       Form     @relation(fields: [form_id], references: [id])
 
   @@map("questions")
 }
+
 model Answer {
-  id          Int @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   user_id     Int
   form_id     Int
   question_id Int
-  value       String
-  user        User @relation(fields: [user_id], references: [id])
-  form        Form @relation(fields: [form_id], references: [id])
-  question    Question @relation(fields: [question_id], references: [id])
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
+  value       String
+  form        Form     @relation(fields: [form_id], references: [id])
+  question    Question @relation(fields: [question_id], references: [id])
+  user        User     @relation(fields: [user_id], references: [id])
 
   @@map("answers")
+}
+
+/// @model - struktur model
+/// *
+enum Status {
+  ACTIVE
+  INACTIVE
 }
