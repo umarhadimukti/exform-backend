@@ -32,12 +32,9 @@ class AnswerController
                 where: { question_id: { in: questionForm['id'] } }
             });
 
-            console.log(answerQuestion);
-
-
             return res.status(200).json({
                 status: true,
-                data: {},
+                data: answerQuestion,
             });
         } catch (error) {
             return res
@@ -74,8 +71,6 @@ class AnswerController
             if (!isQuestionForm) throw new CustomError('invalid question.', 400);
 
             const validatedAnswer = answerSchema.parse(payload);
-
-            console.log(validatedAnswer)
 
             const answerQuestion = await prisma.answer.create({
                 data: {
