@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import CustomError from "../libs/errors/CustomError";
 import { prisma } from "../db/connection";
 import { answerSchema } from "../validators/answerValidator";
+import { requiredButEmpty } from "../libs/requiredButEmpty";
 
 class AnswerController
 {
@@ -20,11 +21,18 @@ class AnswerController
 
             const isUserForm = await prisma.form.findMany({
                 where: { id: parsedFormId, user_id: user?.id },
+                include: {
+                    questions: {
+                        select: { id: true },
+                    },
+                },
             });
 
             if (!isUserForm) {
                 throw new CustomError('this form doesn\'t belong to the user.', 403);
             }
+
+            const isRequiredButEmpty = requiredButEmpty(isUserForm);
 
             const questionForm = await prisma.question.findMany({
                 where: { form_id: parsedFormId },
