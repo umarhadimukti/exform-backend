@@ -191,7 +191,6 @@ class OptionController
 
             
             const filteredOptions = existingOptions.filter(opt => opt.id !== optionId);
-            console.log(filteredOptions)
 
             if (filteredOptions.length === existingOptions.length) {
                 throw new CustomError('options not found.', 404);

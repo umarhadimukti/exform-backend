@@ -107,7 +107,6 @@ class QuestionController
                     option: opt.option,
                 };
             });
-            console.log(optionsWithId)
 
             const newQuestion = await prisma.question.create({
                 data: {
