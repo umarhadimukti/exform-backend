@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import CustomError from "../libs/errors/CustomError";
 import { prisma } from "../db/connection";
-import { answerSchema } from "../validators/answerValidator";
 import { requiredButEmpty } from "../libs/requiredButEmpty";
+import { PayloadAnswer, PayloadQuestionAnswers } from "../types/payloadType";
 
 class AnswerController
 {
@@ -77,23 +77,25 @@ class AnswerController
 
             const isEmptyAnswer = await requiredButEmpty(isUserForm, payload.data);
 
-            if (isEmptyAnswer) {
-                console.log('ada yg kosong')
-            }
+            if (isEmptyAnswer) throw new CustomError('answer is required.', 400);
 
-            // const answerQuestion = await prisma.answer.create({
-            //     data: {
-            //         user_id: user?.id,
-            //         form_id: parsedFormId,
-            //         question_id: parsedQuestionId,
-            //         value: validatedAnswer.value,
-            //     }
-            // });
+            const answerToBeStore: PayloadAnswer[] = [];
+
+            payload.data.forEach((data: PayloadQuestionAnswers) => {
+                answerToBeStore.push({
+                    user_id: user?.id,
+                    form_id: parsedFormId,
+                    question_id: data.question_id,
+                    value: data.answer,
+                });
+            })
+
+            const answerQuestion = await prisma.answer.createMany({ data: answerToBeStore });
 
             return res.status(201).json({
                 status: true,
                 message: 'answer successfully created.',
-                // data: answerQuestion,
+                data: answerQuestion,
             });
         } catch (error) {
             return res
