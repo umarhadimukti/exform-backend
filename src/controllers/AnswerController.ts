@@ -96,12 +96,12 @@ class AnswerController
                 });
             })
 
-            // const answerQuestion = await prisma.answer.createMany({ data: answerToBeStore });
+            const answerQuestion = await prisma.answer.createMany({ data: answerToBeStore });
 
             return res.status(201).json({
                 status: true,
                 message: 'answer successfully created.',
-                // data: answerQuestion,
+                data: answerQuestion,
             });
         } catch (error) {
             return res
