@@ -1,5 +1,5 @@
 import { FormWithQuestions } from "../types/formType";
-import { PayloadAnswer, PayloadQuestionAnswers } from '../types/payloadType';
+import { PayloadQuestionAnswers } from '../types/payloadType';
 import { Question } from "@prisma/client";
 
 export const availableAnswer = (form: FormWithQuestions, payload: PayloadQuestionAnswers[]): boolean =>
@@ -18,7 +18,7 @@ export const availableAnswer = (form: FormWithQuestions, payload: PayloadQuestio
                 
                 if (option === undefined) return true;
             }
-            
+
         }
     });
 
