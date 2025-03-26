@@ -21,18 +21,11 @@ class AnswerController
 
             const isUserForm = await prisma.form.findMany({
                 where: { id: parsedFormId, user_id: user?.id },
-                include: {
-                    questions: {
-                        select: { id: true },
-                    },
-                },
             });
 
             if (!isUserForm) {
                 throw new CustomError('this form doesn\'t belong to the user.', 403);
             }
-
-            const isRequiredButEmpty = requiredButEmpty(isUserForm);
 
             const questionForm = await prisma.question.findMany({
                 where: { form_id: parsedFormId },
@@ -66,38 +59,38 @@ class AnswerController
     {
         try {
             const { user } = req;
-            const { formId, questionId } = req.params;
+            const { formId } = req.params;
             const payload = req.body;
 
             const parsedFormId: number= parseInt(formId, 10);
-            const parsedQuestionId: number= parseInt(questionId, 10);
 
-            if (isNaN(parsedFormId) || isNaN(parsedQuestionId)) throw new CustomError('form id or question id is invalid.', 400);
+            if (isNaN(parsedFormId)) throw new CustomError('form id is invalid.', 400);
 
             const isUserForm = await prisma.form.findFirst({
-                where: { id: parsedFormId, user_id: user?.id }
+                where: { id: parsedFormId, user_id: user?.id },
+                include: {
+                    questions: true,
+                },
             });
 
             if (!isUserForm) throw new CustomError('invalid form.', 400);
 
-            const isQuestionForm = await prisma.question.findFirst({
-                where: { id: parsedQuestionId, form_id: parsedFormId },
-            })
+            const requiredAnswer = await requiredButEmpty(isUserForm, payload.data);
 
-            if (!isQuestionForm) throw new CustomError('invalid question.', 400);
+            // const answerQuestion = await prisma.answer.create({
+            //     data: {
+            //         user_id: user?.id,
+            //         form_id: parsedFormId,
+            //         question_id: parsedQuestionId,
+            //         value: validatedAnswer.value,
+            //     }
+            // });
 
-            const validatedAnswer = answerSchema.parse(payload);
-
-            const answerQuestion = await prisma.answer.create({
-                data: {
-                    user_id: user?.id,
-                    form_id: parsedFormId,
-                    question_id: parsedQuestionId,
-                    value: validatedAnswer.value,
-                }
+            return res.status(201).json({
+                status: true,
+                message: 'answer successfully created.',
+                // data: answerQuestion,
             });
-
-            return res.status(201).json({ status: true, message: 'answer successfully created.', data: answerQuestion });
         } catch (error) {
             return res
                 .status(error instanceof CustomError ? error.statusCode : 500)
