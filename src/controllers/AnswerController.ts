@@ -75,10 +75,14 @@ class AnswerController
 
             if (!isUserForm) throw new CustomError('invalid form.', 400);
 
+            // check if answer is required, but the value is empty.
             const isEmptyAnswer = await requiredButEmpty(isUserForm, payload.data);
-
             if (isEmptyAnswer) throw new CustomError('answer is required.', 400);
 
+            // check if user's answer is not in available in options
+            
+
+            // store to db..
             const answerToBeStore: PayloadAnswer[] = [];
 
             payload.data.forEach((data: PayloadQuestionAnswers) => {
