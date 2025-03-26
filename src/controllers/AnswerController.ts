@@ -75,7 +75,11 @@ class AnswerController
 
             if (!isUserForm) throw new CustomError('invalid form.', 400);
 
-            const requiredAnswer = await requiredButEmpty(isUserForm, payload.data);
+            const isEmptyAnswer = await requiredButEmpty(isUserForm, payload.data);
+
+            if (isEmptyAnswer) {
+                console.log('ada yg kosong')
+            }
 
             // const answerQuestion = await prisma.answer.create({
             //     data: {
