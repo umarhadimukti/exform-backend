@@ -3,6 +3,7 @@ import CustomError from "../libs/errors/CustomError";
 import { prisma } from "../db/connection";
 import { requiredButEmpty } from "../libs/requiredButEmpty";
 import { PayloadAnswer, PayloadQuestionAnswers } from "../types/payloadType";
+import { availableAnswer } from "../libs/availableAnswer";
 
 class AnswerController
 {
@@ -79,8 +80,9 @@ class AnswerController
             const isEmptyAnswer = await requiredButEmpty(isUserForm, payload.data);
             if (isEmptyAnswer) throw new CustomError('answer is required.', 400);
 
-            // check if user's answer is not in available in options
-            
+            // check if user's answer is not available in options
+            const isAvailableAnswer = availableAnswer(isUserForm, payload.data);
+            if (isAvailableAnswer) throw new CustomError('answer is not available in options.', 400);
 
             // store to db..
             const answerToBeStore: PayloadAnswer[] = [];
@@ -94,12 +96,12 @@ class AnswerController
                 });
             })
 
-            const answerQuestion = await prisma.answer.createMany({ data: answerToBeStore });
+            // const answerQuestion = await prisma.answer.createMany({ data: answerToBeStore });
 
             return res.status(201).json({
                 status: true,
                 message: 'answer successfully created.',
-                data: answerQuestion,
+                // data: answerQuestion,
             });
         } catch (error) {
             return res
