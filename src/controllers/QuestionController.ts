@@ -171,8 +171,10 @@ class QuestionController
                 throw new CustomError('question doesn\'t belong to the specified form', 404);
             }
 
-            if (!this.allowedTypes.includes(payload.type)) {
-                throw new CustomError(`field 'type' must be (${ this.allowedTypes.join(', ') })`, 428);
+            if (!existingQuestion?.type) {
+                if (!this.allowedTypes.includes(payload.type)) {
+                    throw new CustomError(`field 'type' must be (${ this.allowedTypes.join(', ') })`, 428);
+                }
             }
 
             const question = await prisma.question.update({

@@ -7,9 +7,17 @@ export const validateEmail = (form: FormWithQuestions, payload: PayloadQuestionA
     const validEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     const filteredQuestions = form.questions.filter((question: Question) => {
-        if (question.type === 'email') {
+        if (question?.type === 'email') {
             // search answer that's belong to the question
             const answer = payload.find((data: any) => data.question_id === question.id);
+
+            // check if email required === false, and answer from user is empty, then just return false.
+            if (!question?.required) {
+                if (!answer?.answer || answer?.answer === undefined || answer?.answer === '') {
+                    return false;
+                }
+            }
+
             if (answer) {
                 // if email is matches with regex, return true
                 if (!answer.answer.match(validEmailRegex)) {
