@@ -4,6 +4,7 @@ import { prisma } from "../db/connection";
 import { requiredButEmpty } from "../libs/requiredButEmpty";
 import { PayloadAnswer, PayloadQuestionAnswers } from "../types/payloadType";
 import { availableAnswer } from "../libs/availableAnswer";
+import { validateQuestionId } from "../libs/validateQuestionId";
 
 class AnswerController
 {
@@ -79,6 +80,10 @@ class AnswerController
             // check if answer is required, but the value is empty.
             const isEmptyAnswer = await requiredButEmpty(isUserForm, payload.data);
             if (isEmptyAnswer) throw new CustomError('answer is required.', 400);
+
+            // check question id is valid
+            const isValidQuestion = validateQuestionId(isUserForm, payload.data);
+            if (!isValidQuestion) throw new CustomError('question id is not valid.', 400);
 
             // check if user's answer is not available in options
             const isAvailableAnswer = availableAnswer(isUserForm, payload.data);

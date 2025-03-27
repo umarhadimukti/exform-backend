@@ -7,7 +7,7 @@ export const availableAnswer = (form: FormWithQuestions, payload: PayloadQuestio
     const singleChoose: string[] = [ 'dropdown', 'radio' ];
     const multipleChoose: string[] = [ 'checkbox' ];
 
-    const foundAnswer = form.questions.filter((question: Question) => {
+    const foundQuestion = form.questions.filter((question: Question) => {
         if (singleChoose.includes(question?.type)) {
             
             const answer = payload.find((p: PayloadQuestionAnswers) => p.question_id === question?.id);
@@ -37,5 +37,5 @@ export const availableAnswer = (form: FormWithQuestions, payload: PayloadQuestio
         }
     });
 
-    return foundAnswer.length > 0 ? true : false;
+    return foundQuestion.length > 0 ? true : false;
 }
