@@ -92,7 +92,7 @@ class AnswerController
                     user_id: user?.id,
                     form_id: parsedFormId,
                     question_id: data.question_id,
-                    value: data.answer,
+                    value: Array.isArray(data.answer) ? data.answer.join(', ') : data.answer,
                 });
             })
 
