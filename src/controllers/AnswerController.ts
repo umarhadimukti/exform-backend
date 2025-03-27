@@ -101,7 +101,6 @@ class AnswerController
             return res.status(201).json({
                 status: true,
                 message: 'answer successfully created.',
-                data: answerQuestion,
             });
         } catch (error) {
             return res
