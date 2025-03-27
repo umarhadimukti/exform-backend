@@ -8,7 +8,8 @@
     "dev": "nodemon ./src/index.ts",
     "migrate": "read -p 'enter migration name: ' name && pnpm exec prisma migrate dev --name \"$name\"",
     "build": "npx tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "make:controller": "ts-node ./scripts/makeController.ts"
   },
   "keywords": [],
   "author": "",
