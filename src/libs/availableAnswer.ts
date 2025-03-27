@@ -4,10 +4,11 @@ import { Question } from "@prisma/client";
 
 export const availableAnswer = (form: FormWithQuestions, payload: PayloadQuestionAnswers[]): boolean =>
 {
-    const answerTypes: string[] = [ 'dropdown', 'radio' ];
+    const singleChoose: string[] = [ 'dropdown', 'radio' ];
+    const multipleChoose: string[] = [ 'checkbox' ];
 
     const foundAnswer = form.questions.filter((question: Question) => {
-        if (answerTypes.includes(question?.type)) {
+        if (singleChoose.includes(question?.type)) {
             
             const answer = payload.find((p: PayloadQuestionAnswers) => p.question_id === question?.id);
             if (answer) {
@@ -19,6 +20,20 @@ export const availableAnswer = (form: FormWithQuestions, payload: PayloadQuestio
                 if (option === undefined) return true;
             }
 
+        } else if (multipleChoose.includes(question?.type)) {
+            const answer = payload.find((p: PayloadQuestionAnswers) => p.question_id === question?.id);
+
+            if (answer) {
+                const optionsArray = Array.isArray(question?.options) ? question.options : [];
+                const answerArray = Array.isArray(answer.answer) ? answer.answer : [];
+                return answerArray.some((ans: string) => {
+                    const option = optionsArray.find((opt: any) => {
+                        return opt.option === ans;
+                    });
+
+                    if (option === undefined) return true;
+                });
+            }
         }
     });
 
