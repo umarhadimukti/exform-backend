@@ -5,6 +5,7 @@ import { requiredButEmpty } from "../libs/requiredButEmpty";
 import { PayloadAnswer, PayloadQuestionAnswers } from "../types/payloadType";
 import { availableAnswer } from "../libs/availableAnswer";
 import { validateQuestionId } from "../libs/validateQuestionId";
+import { validateEmail } from "../libs/validateEmail";
 
 class AnswerController
 {
@@ -87,6 +88,10 @@ class AnswerController
             const isValidQuestion = validateQuestionId(isUserForm, payload.data);
             if (!isValidQuestion) throw new CustomError('question id is not valid.', 400);
 
+            // check email is valid
+            const isValidEmail = validateEmail(isUserForm, payload.data);
+            if (!isValidEmail) throw new CustomError('email is not valid.', 400);
+
             // check if user's answer is not available in options
             const isAvailableAnswer = availableAnswer(isUserForm, payload.data);
             if (isAvailableAnswer) throw new CustomError('answer is not available in options.', 400);
@@ -103,7 +108,7 @@ class AnswerController
                 });
             })
 
-            const answerQuestion = await prisma.answer.createMany({ data: answerToBeStore });
+            // const answerQuestion = await prisma.answer.createMany({ data: answerToBeStore });
 
             return res.status(201).json({
                 status: true,

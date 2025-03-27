@@ -36,8 +36,6 @@ export const availableAnswer = (form: FormWithQuestions, payload: PayloadQuestio
                 });
             }
 
-        } else if (question.type === 'email') {
-
         }
     });
 
