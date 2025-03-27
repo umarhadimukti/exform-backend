@@ -38,7 +38,9 @@ class AnswerController
                     answers: {
                         select: {
                             value: true,
-                        }
+                        },
+                        take: 1,
+                        orderBy: { created_at: 'desc' }
                     }
                 }
             });
