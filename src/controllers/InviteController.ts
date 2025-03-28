@@ -1,11 +1,25 @@
 import { Request, Response } from 'express';
-import { BaseController, Controller } from '@interface/ControllerInterface';
+import CustomError from '../libs/errors/CustomError';
+import { prisma } from '../db/connection';
+import { BaseController } from '../interfaces/ControllerInterface';
 
 class InviteController extends BaseController {
 
-    public create(req: Request, res: Response): Response {
+    public async create(req: Request, res: Response): Promise<Response> {
         try {
-            // logic here..
+            const { user } = req;
+            const { formId } = req.params;
+
+            const parsedFormId: number = parseInt(formId, 10);
+            if (!parsedFormId || isNaN(parsedFormId)) throw new CustomError('invalid form id.', 400);
+
+            const isUserForm = await prisma.form.findFirst({
+                where: { user_id: user?.id, id: parsedFormId }
+            });
+            if (!isUserForm) throw new CustomError('invalid form (you don\'t have access with this form.', 400);
+
+            
+
 
             return res.status(201).json({
                 status: true,

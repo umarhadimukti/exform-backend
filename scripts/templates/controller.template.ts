@@ -1,7 +1,7 @@
 export const generateControllerTemplate = (name: string): string =>
 {
     return `import { Request, Response } from 'express';
-import { Controller } from '@interface/ControllerInterface';
+import { Controller } from '../interfaces/ControllerInterface';
 
 class ${name} implements Controller<Response> {
     public index(req: Request, res: Response): Response {

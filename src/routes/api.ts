@@ -6,8 +6,14 @@ import FormController from "../controllers/FormController";
 import QuestionController from "../controllers/QuestionController";
 import OptionContoller from "../controllers/OptionContoller";
 import AnswerController from "../controllers/AnswerController";
+import InviteController from "../controllers/InviteController";
 
 const router: Router = Router();
+
+// invite routes
+router.post('/form/:formId/invites', jwtAuth(), async (req: Request, res: Response) => {
+    await InviteController.create(req, res);
+});
 
 // answers routes
 router.get('/form/:formId/answers', jwtAuth(), async (req: Request, res: Response) => {
