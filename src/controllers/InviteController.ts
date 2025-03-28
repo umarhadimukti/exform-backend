@@ -1,33 +1,7 @@
 import { Request, Response } from 'express';
-import { Controller } from '@interface/ControllerInterface';
+import { BaseController, Controller } from '@interface/ControllerInterface';
 
-class InviteController implements Controller<Response> {
-    public index(req: Request, res: Response): Response {
-        try {
-            // logic here..
-
-            return res.status(200).json({
-                status: true,
-                length: 0,
-                data: []
-            });
-        } catch (error) {
-            return this.handleError(res, error, 'failed to get data.');
-        }
-    }
-
-    public show(req: Request, res: Response): Response {
-        try {
-            // logic here..
-
-            return res.status(200).json({
-                status: true,
-                data: {}
-            });
-        } catch (error) {
-            return this.handleError(res, error, 'failed to get data.');
-        }
-    }
+class InviteController extends BaseController {
 
     public create(req: Request, res: Response): Response {
         try {
@@ -55,20 +29,6 @@ class InviteController implements Controller<Response> {
             });
         } catch (error) {
             return this.handleError(res, error, 'failed to update data.');
-        }
-    }
-
-    public delete(req: Request, res: Response): Response {
-        try {
-            const { id } = req.params;
-            // logic here..
-
-            return res.status(200).json({
-                message: 'data successfully deleted.',
-                data: { id }
-            });
-        } catch (error) {
-            return this.handleError(res, error, 'failed to delete data.');
         }
     }
 
