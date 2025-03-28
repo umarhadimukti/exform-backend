@@ -1,7 +1,7 @@
 export const generateControllerTemplate = (name: string): string =>
 {
     return `import { Request, Response } from 'express';
-import { Controller } from '../../scripts/templates/controller.interface';
+import { Controller } from '@interface/ControllerInterface';
 
 class ${name} implements Controller<Response> {
     public index(req: Request, res: Response): Response {
@@ -9,11 +9,25 @@ class ${name} implements Controller<Response> {
             // logic here..
 
             return res.status(200).json({
-                message: '${name} - Daftar data berhasil diambil',
+                status: true,
+                length: 0,
                 data: []
             });
         } catch (error) {
-            return this.handleError(res, error, 'Gagal mengambil data');
+            return this.handleError(res, error, 'failed to get data.');
+        }
+    }
+
+    public show(req: Request, res: Response): Response {
+        try {
+            // logic here..
+
+            return res.status(200).json({
+                status: true,
+                data: {}
+            });
+        } catch (error) {
+            return this.handleError(res, error, 'failed to get data.');
         }
     }
 
@@ -22,25 +36,27 @@ class ${name} implements Controller<Response> {
             // logic here..
 
             return res.status(201).json({
-                message: '${name} - Data berhasil dibuat',
+                status: true,
+                message: 'data successfully created.',
                 data: req.body
             });
         } catch (error) {
-            return this.handleError(res, error, 'Gagal membuat data');
+            return this.handleError(res, error, 'failed to create data.');
         }
     }
 
     public update(req: Request, res: Response): Response {
         try {
             const { id } = req.params;
-            // Implementasi logika update
+            // logic here..
 
             return res.status(200).json({
-                message: '${name} - Data berhasil diperbarui',
+                status: true,
+                message: 'data successfully updated.',
                 data: { id, ...req.body }
             });
         } catch (error) {
-            return this.handleError(res, error, 'Gagal memperbarui data');
+            return this.handleError(res, error, 'failed to update data.');
         }
     }
 
@@ -50,19 +66,20 @@ class ${name} implements Controller<Response> {
             // logic here..
 
             return res.status(200).json({
-                message: '${name} - Data berhasil dihapus',
+                message: 'data successfully deleted.',
                 data: { id }
             });
         } catch (error) {
-            return this.handleError(res, error, 'Gagal menghapus data');
+            return this.handleError(res, error, 'failed to delete data.');
         }
     }
 
     private handleError(res: Response, error: unknown, message: string): Response {
         console.error(error);
         return res.status(500).json({
+            status: false,
             message,
-            error: error instanceof Error ? error.message : 'Unknown error'
+            error: error instanceof Error ? error.message : 'unknown error'
         });
     }
 }
