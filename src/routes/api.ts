@@ -14,6 +14,9 @@ const router: Router = Router();
 router.post('/form/:formId/invites', jwtAuth(), async (req: Request, res: Response) => {
     await InviteController.create(req, res);
 });
+router.delete('/form/:formId/invites', jwtAuth(), async (req: Request, res: Response) => {
+    await InviteController.delete(req, res);
+});
 
 // answers routes
 router.get('/form/:formId/answers', jwtAuth(), async (req: Request, res: Response) => {

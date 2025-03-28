@@ -3,7 +3,7 @@ import CustomError from '../libs/errors/CustomError';
 import { prisma } from '../db/connection';
 import { BaseController } from '../interfaces/ControllerInterface';
 import { invitesSchema, InvitesSchemaType } from '../validators/invitesValidator';
-import { ZodError } from 'zod';
+import { z, ZodError } from 'zod';
 import { Form } from '@prisma/client';
 
 class InviteController extends BaseController {
@@ -63,30 +63,44 @@ class InviteController extends BaseController {
         }
     }
 
-    public update(req: Request, res: Response): Response {
+    public async delete(req: Request, res: Response): Promise<Response> {
         try {
-            const { id } = req.params;
-            // logic here..
+            const { user } = req;
+            const { formId } = req.params;
+            const payload = req.body;
 
-            return res.status(200).json({
-                status: true,
-                message: 'data successfully updated.',
-                data: { id, ...req.body }
+            const parsedFormId: number = parseInt(formId, 10);
+            if (!parsedFormId || isNaN(parsedFormId)) throw new CustomError('invalid form id.', 400);
+
+            const isUserForm: Form | null = await prisma.form.findFirst({
+                where: { user_id: user?.id, id: parsedFormId }
             });
-        } catch (error) {
-            return this.handleError(res, error, 'failed to update data');
-        }
-    }
+            if (!isUserForm) throw new CustomError('invalid form (you don\'t have access with this form.', 400);
 
-    public delete(req: Request, res: Response): Response {
-        try {
-            const { id } = req.params;
-            // logic here..
+            // validate payload
+            const validator = z.object({ deleted_email: z.string().email({ message: 'invalid email address.' }).optional() });
+            const validatedPayload: { deleted_email?: string | undefined } = validator.parse(payload);
+
+            // check if email is not exists in database
+            const isExistsEmail = isUserForm?.invites.find((email: string) => email === validatedPayload?.deleted_email);
+            if (!isExistsEmail) throw new CustomError('email doesn\'t exists.', 400);
+
+            // check if exists in database
+            const newEmails = isUserForm?.invites.filter((email: string) => {
+                return email !== validatedPayload?.deleted_email
+            });
+
+            const updatedForm = await prisma.form.update({
+                where: { id: isUserForm?.id },
+                data: {
+                    invites: newEmails,
+                }
+            });
 
             return res.status(200).json({
                 status: true,
                 message: 'data successfully deleted.',
-                data: { id }
+                deleted_data: validatedPayload?.deleted_email,
             });
         } catch (error) {
             return this.handleError(res, error, 'failed to delete data');
