@@ -25,25 +25,41 @@ class InviteController extends BaseController {
             // validate payload
             const validatedPayload: InvitesSchemaType = invitesSchema.parse(payload);
 
+            // check duplicate email in database
+            const filteredEmail: string[] = isUserForm?.invites.filter((email: string) => {
+                const isDuplicateEmail: string | undefined = validatedPayload?.invited_users?.find((inv: string) => inv === email);
+
+                if (isDuplicateEmail) {
+                    return true;
+                }
+            })
+
+            if (filteredEmail.length > 0) throw new CustomError('email already exists!', 400);
+
+            // add new email
+            const newInvites: string[] = [
+                ...(isUserForm?.invites || []),
+                ...(validatedPayload?.invited_users || []),
+            ];
 
 
             // update field invites
-            // const updatedInvites = await prisma.form.update({
-            //     where: {
-            //         id: isUserForm?.id
-            //     },
-            //     data: {
-            //         invites: validatedPayload.invited_users,
-            //     },
-            // });
+            const updatedInvites = await prisma.form.update({
+                where: {
+                    id: isUserForm?.id
+                },
+                data: {
+                    invites: newInvites,
+                },
+            });
 
             return res.status(201).json({
                 status: true,
                 message: 'data successfully created.',
-                // data: updatedInvites,
+                data: updatedInvites,
             });
         } catch (error) {
-            return this.handleError(res, error, 'failed to create data.');
+            return this.handleError(res, error, 'failed to create data');
         }
     }
 
@@ -58,7 +74,7 @@ class InviteController extends BaseController {
                 data: { id, ...req.body }
             });
         } catch (error) {
-            return this.handleError(res, error, 'failed to update data.');
+            return this.handleError(res, error, 'failed to update data');
         }
     }
 
@@ -74,10 +90,9 @@ class InviteController extends BaseController {
             return res.status(428).json({ status: false, message: formattedErrors });
         }
 
-        return res.status(500).json({
+        return res.status(error instanceof CustomError ? error.statusCode : 500).json({
             status: false,
-            message,
-            error: error instanceof Error ? error.message : 'unknown error'
+            message: `${message}: ${error instanceof Error ? error.message : 'unknown error'}`,
         });
     }
 }
