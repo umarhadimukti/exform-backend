@@ -90,7 +90,7 @@ class InviteController extends BaseController {
                 return email !== validatedPayload?.deleted_email
             });
 
-            const updatedForm = await prisma.form.update({
+            await prisma.form.update({
                 where: { id: isUserForm?.id },
                 data: {
                     invites: newEmails,
