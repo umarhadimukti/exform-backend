@@ -85,7 +85,7 @@ class InviteController extends BaseController {
             const isExistsEmail = isUserForm?.invites.find((email: string) => email === validatedPayload?.deleted_email);
             if (!isExistsEmail) throw new CustomError('email doesn\'t exists.', 400);
 
-            // check if exists in database
+            // get email without email from user
             const newEmails = isUserForm?.invites.filter((email: string) => {
                 return email !== validatedPayload?.deleted_email
             });
