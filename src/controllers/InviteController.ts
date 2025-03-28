@@ -78,6 +78,21 @@ class InviteController extends BaseController {
         }
     }
 
+    public delete(req: Request, res: Response): Response {
+        try {
+            const { id } = req.params;
+            // logic here..
+
+            return res.status(200).json({
+                status: true,
+                message: 'data successfully deleted.',
+                data: { id }
+            });
+        } catch (error) {
+            return this.handleError(res, error, 'failed to delete data');
+        }
+    }
+
     private handleError(res: Response, error: unknown, message: string): Response {
         if (error instanceof ZodError) {
             const formattedErrors = error?.errors.map((err) => {
