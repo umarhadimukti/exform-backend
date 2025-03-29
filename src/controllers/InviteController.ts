@@ -8,6 +8,30 @@ import { Form } from '@prisma/client';
 
 class InviteController extends BaseController {
 
+    public async index(req: Request, res: Response): Promise<Response> {
+        try {
+            const { user } = req;
+            const { formId } = req.params;
+
+            const parsedFormId: number = parseInt(formId, 10);
+            if (!parsedFormId || isNaN(parsedFormId)) throw new CustomError('invalid form id.', 400);
+
+            const isUserForm: Form | null = await prisma.form.findFirst({
+                where: { user_id: user?.id, id: parsedFormId }
+            });
+            if (!isUserForm) throw new CustomError('invalid form (you don\'t have access with this form.', 400);
+
+            return res.status(200).json({
+                status: false,
+                length: isUserForm?.invites.length,
+                data: isUserForm?.invites,
+            });
+
+        } catch (error) {
+            return this.handleError(res, error, 'failed to get data');
+        }
+    }
+
     public async create(req: Request, res: Response): Promise<Response> {
         try {
             const { user } = req;

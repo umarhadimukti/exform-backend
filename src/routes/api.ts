@@ -11,6 +11,9 @@ import InviteController from "../controllers/InviteController";
 const router: Router = Router();
 
 // invite routes
+router.get('/form/:formId/invites', jwtAuth(), async (req: Request, res: Response) => {
+    await InviteController.index(req, res);
+});
 router.post('/form/:formId/invites', jwtAuth(), async (req: Request, res: Response) => {
     await InviteController.create(req, res);
 });
