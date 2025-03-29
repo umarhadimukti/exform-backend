@@ -9,11 +9,26 @@ class FormSeeder
 
     public factory(userId: number): FormSeederType
     {
+        
+        // common's form type
+        const formTypes: string[] = [
+            'Customer Survey',
+            'Feedback Form',
+            'Registration Form',
+            'Contact Form',
+            'Application Form'
+          ];
+
+        // create forms
+        const formType = faker.helpers.arrayElement(formTypes);
+
+        // create random invites
         const inviteCount = faker.number.int({ min: 0, max: 5 });
         const invites = Array.from({ length: inviteCount }, () => faker.internet.email());
+        
 
         return {
-            title: faker.lorem.sentence({ min: 3, max: 8 }).replace('.', ''),
+            title: `${formType}: ${faker.company.name()}`,
             description: faker.datatype.boolean(0.8) ? faker.lorem.paragraph(2) : null,
             is_public: faker.datatype.boolean(0.7),
             invites,
@@ -47,14 +62,7 @@ class FormSeeder
             // get random user
             const user = users[Math.floor(Math.random() * users.length)];
 
-            // common's form type
-            const formTypes: string[] = [
-                'Customer Survey',
-                'Feedback Form',
-                'Registration Form',
-                'Contact Form',
-                'Application Form'
-              ];
+            
 
         }
         
