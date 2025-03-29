@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
-import { FormSeeder as FormSeederType } from '../types/formType';
-import { prisma } from "../db/connection";
-import AuthService from "../libs/services/AuthService";
+import { FormSeeder as FormSeederType } from '../../types/formType';
+import { prisma } from "../../db/connection";
+import AuthService from "../../libs/services/AuthService";
 import { User } from "@prisma/client";
 
 class FormSeeder
@@ -65,7 +65,7 @@ class FormSeeder
                 // get random user
                 const user = users[Math.floor(Math.random() * users.length)];
                 
-                const form = await prisma.form.create(this.factory(user.id));
+                await prisma.form.create(this.factory(user.id));
             }
 
             console.log('✅ seeding completed.');
