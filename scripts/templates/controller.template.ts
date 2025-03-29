@@ -14,7 +14,7 @@ class ${name} implements Controller<Response> {
                 data: []
             });
         } catch (error) {
-            return this.handleError(res, error, 'failed to get data.');
+            return this.handleError(res, error, 'failed to get data');
         }
     }
 
@@ -27,7 +27,7 @@ class ${name} implements Controller<Response> {
                 data: {}
             });
         } catch (error) {
-            return this.handleError(res, error, 'failed to get data.');
+            return this.handleError(res, error, 'failed to get data');
         }
     }
 
@@ -41,7 +41,7 @@ class ${name} implements Controller<Response> {
                 data: req.body
             });
         } catch (error) {
-            return this.handleError(res, error, 'failed to create data.');
+            return this.handleError(res, error, 'failed to create data');
         }
     }
 
@@ -56,7 +56,7 @@ class ${name} implements Controller<Response> {
                 data: { id, ...req.body }
             });
         } catch (error) {
-            return this.handleError(res, error, 'failed to update data.');
+            return this.handleError(res, error, 'failed to update data');
         }
     }
 
@@ -70,16 +70,25 @@ class ${name} implements Controller<Response> {
                 data: { id }
             });
         } catch (error) {
-            return this.handleError(res, error, 'failed to delete data.');
+            return this.handleError(res, error, 'failed to delete data');
         }
     }
 
     private handleError(res: Response, error: unknown, message: string): Response {
-        console.error(error);
-        return res.status(500).json({
+        if (error instanceof ZodError) {
+            const formattedErrors = error?.errors.map((err) => {
+                return ({
+                    field: err.path[0],
+                    message: err.message,
+                });
+            })
+
+            return res.status(428).json({ status: false, message: formattedErrors });
+        }
+
+        return res.status(error instanceof CustomError ? error.statusCode : 500).json({
             status: false,
-            message,
-            error: error instanceof Error ? error.message : 'unknown error'
+            message: message + ': ' + error instanceof Error ? error.message : 'unknown error',
         });
     }
 }
