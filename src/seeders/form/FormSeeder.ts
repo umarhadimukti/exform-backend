@@ -1,5 +1,4 @@
 import { faker } from "@faker-js/faker";
-import { FormSeeder as FormSeederType } from '../../types/formType';
 import { prisma } from "../../db/connection";
 import AuthService from "../../libs/services/AuthService";
 import { User } from "@prisma/client";
