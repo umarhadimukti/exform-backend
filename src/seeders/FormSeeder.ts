@@ -7,7 +7,7 @@ import { User } from "@prisma/client";
 class FormSeeder
 {
 
-    public factory(userId: number): FormSeederType
+    public factory(userId: number)
     {
         
         // common's form type
@@ -28,42 +28,52 @@ class FormSeeder
         
 
         return {
-            title: `${formType}: ${faker.company.name()}`,
-            description: faker.datatype.boolean(0.8) ? faker.lorem.paragraph(2) : null,
-            is_public: faker.datatype.boolean(0.7),
-            invites,
-            user_id: userId,
+            data: {
+                title: `${formType}: ${faker.company.name()}`,
+                description: faker.datatype.boolean(0.8) ? faker.lorem.paragraph(2) : null,
+                is_public: faker.datatype.boolean(0.7),
+                invites,
+                user_id: userId,
+            }
         }
     }
 
     public async seed(counter: number = 10)
     {
-        console.log('🌱 start seeding form seeder..');
+        try {
+            console.log('🌱 start seeding form seeder..');
+    
+            let users: User[] = await prisma.user.findMany();
+            if (users.length === 0) {
+                console.log('no user found, starting create new default user..');
+    
+                const authService = new AuthService();
+                const defaultUser = await prisma.user.create({
+                    data: {
+                        first_name: 'John',
+                        last_name: 'Doe',
+                        email: 'john_doe@gmail.com',
+                        password: await authService.hashPassword('test1234'),
+                        role_id: 1,
+                    }
+                });
+    
+                users = [defaultUser];
+            }
+    
+            for (let i = 0; i < counter; i++) {
+                // get random user
+                const user = users[Math.floor(Math.random() * users.length)];
+                
+                const form = await prisma.form.create(this.factory(user.id));
+            }
 
-        let users: User[] = await prisma.user.findMany();
-        if (users.length === 0) {
-            console.log('no user found, starting create new default user..');
-
-            const authService = new AuthService();
-            const defaultUser = await prisma.user.create({
-                data: {
-                    first_name: 'John',
-                    last_name: 'Doe',
-                    email: 'john_doe@gmail.com',
-                    password: await authService.hashPassword('test1234'),
-                    role_id: 1,
-                }
-            });
-
-            users = [defaultUser];
-        }
-
-        for (let i = 0; i < counter; i++) {
-            // get random user
-            const user = users[Math.floor(Math.random() * users.length)];
-
-            
-
+            console.log('✅ seeding completed.');
+        } catch (error) {
+            console.log('❌ seeding failed\n' + error)
+        } finally {
+            console.log('🔚 seeding process ended.')
+            await prisma.$disconnect();
         }
         
     }
