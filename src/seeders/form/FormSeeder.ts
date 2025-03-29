@@ -71,6 +71,7 @@ class FormSeeder
             console.log('✅ seeding completed.');
         } catch (error) {
             console.log('❌ seeding failed\n' + error)
+            throw error;
         } finally {
             console.log('🔚 seeding process ended.')
             await prisma.$disconnect();
