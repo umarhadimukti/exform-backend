@@ -24,7 +24,12 @@ class FormSeeder
 
         // create random invites
         const inviteCount = faker.number.int({ min: 0, max: 5 });
-        const invites = Array.from({ length: inviteCount }, () => faker.internet.email());
+        const invites = Array.from({ length: inviteCount }, () => {
+            const sex = faker.person.sexType();
+            const firstName = faker.person.firstName(sex);
+            const lastName = faker.person.lastName();
+            return faker.internet.email({ firstName, lastName })
+        });
         
 
         return {
