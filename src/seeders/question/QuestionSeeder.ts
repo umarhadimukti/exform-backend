@@ -54,6 +54,8 @@ class QuestionSeeder
 
         } catch (error) {
             throw error;
+        } finally {
+            await prisma.$disconnect();
         }
         
     }
