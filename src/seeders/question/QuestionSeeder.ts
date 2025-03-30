@@ -26,13 +26,15 @@ class QuestionSeeder
                 option: faker.word.words({ count: { min: 1, max: 3 } })
             })
         }
+
+        const typeWithoutOptions: string[] = ['email', 'text'];
         
         return {
             data: {
                 form_id: formId,
                 type: questionType,
                 question: faker.lorem.sentence(1),
-                options,
+                options: !typeWithoutOptions.includes(questionType) ? options : [],
                 required: faker.datatype.boolean(0.5),
             }
         }
