@@ -35,7 +35,7 @@ class ResponseController extends BaseController {
             });
 
             return res.status(200).json({
-                status: false,
+                status: true,
                 length: answers?.length,
                 answers,
             });

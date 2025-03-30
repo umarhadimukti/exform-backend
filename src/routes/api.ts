@@ -12,7 +12,7 @@ import ResponseController from "../controllers/ResponseController";
 const router: Router = Router();
 
 // response controller
-router.get('/form/:formId/response', jwtAuth(), async (req: Request, res: Response) => {
+router.get('/form/:formId/list-response', jwtAuth(), async (req: Request, res: Response) => {
     await ResponseController.index(req, res);
 });
 
