@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import { Controller } from '../interfaces/ControllerInterface';
+import { BaseController } from '../interfaces/ControllerInterface';
 import { ZodError } from "zod";
 import CustomError from '../libs/errors/CustomError';
 
-class ResponseController implements Controller<Response> {
-    public index(req: Request, res: Response): Response {
+class ResponseController extends BaseController {
+    public async index(req: Request, res: Response): Promise<Response> {
         try {
-            // logic here..
+            
 
             return res.status(200).json({
                 status: true,

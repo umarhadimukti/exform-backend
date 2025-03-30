@@ -7,8 +7,14 @@ import QuestionController from "../controllers/QuestionController";
 import OptionContoller from "../controllers/OptionContoller";
 import AnswerController from "../controllers/AnswerController";
 import InviteController from "../controllers/InviteController";
+import ResponseController from "../controllers/ResponseController";
 
 const router: Router = Router();
+
+// response controller
+router.get('/form/:formId/response', jwtAuth(), async (req: Request, res: Response) => {
+    await ResponseController.index(req, res);
+});
 
 // invite routes
 router.get('/form/:formId/invites', jwtAuth(), async (req: Request, res: Response) => {

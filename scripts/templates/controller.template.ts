@@ -1,7 +1,7 @@
 export const generateControllerTemplate = (name: string): string =>
 {
     return `import { Request, Response } from 'express';
-import { Controller } from '../interfaces/ControllerInterface';
+import { BaseController } from '../interfaces/ControllerInterface';
 import { ZodError } from "zod";
 import CustomError from '../libs/errors/CustomError';
 
