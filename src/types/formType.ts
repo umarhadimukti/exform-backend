@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client"
+import { Prisma } from "@prisma/client";
 
 export type FormWithQuestions = Prisma.FormGetPayload<{ include: { questions: true } }>;
 
@@ -8,4 +8,4 @@ export type FormSeeder = {
     description?: string | null,
     is_public: boolean,
     invites?: string[],
-}
+};
