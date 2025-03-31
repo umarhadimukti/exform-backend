@@ -11,7 +11,7 @@ export const validateEmail = (form: FormWithQuestions, payload: PayloadQuestionA
             // search answer that's belong to the question
             const answer = payload.find((data: any) => data.question_id === question.id);
 
-            // check if email required === false, and answer from user is empty, then just return false.
+            // check if the question required === false, and answer from payload is empty, then just return false.
             if (!question?.required) {
                 if (!answer?.answer || answer?.answer === undefined || answer?.answer === '') {
                     return false;
@@ -19,7 +19,7 @@ export const validateEmail = (form: FormWithQuestions, payload: PayloadQuestionA
             }
 
             if (answer) {
-                // if email is matches with regex, return true
+                // if email is not match with regex, return true
                 if (!answer.answer.match(validEmailRegex)) {
                     return true;
                 }
@@ -27,6 +27,7 @@ export const validateEmail = (form: FormWithQuestions, payload: PayloadQuestionA
         }
     });
 
+    // if there is content then return false (email is not valid)
     return filteredQuestions.length > 0 ? false : true;
 
 }
