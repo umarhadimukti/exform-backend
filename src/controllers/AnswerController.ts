@@ -71,29 +71,33 @@ class AnswerController
 
             if (isNaN(parsedFormId)) throw new CustomError('form id is invalid.', 400);
 
-            const isUserForm = await prisma.form.findFirst({
-                where: { id: parsedFormId, user_id: user?.id },
+            const form = await prisma.form.findFirst({
+                where: { id: parsedFormId },
                 include: {
                     questions: true,
                 },
             });
 
-            if (!isUserForm) throw new CustomError('invalid form.', 400);
+            if (!form) throw new CustomError('form not found.', 404);
+
+            if (user?.id !== form.user_id || !form.is_public) {
+                if (form?.invites.includes(user?.id)) throw new CustomError('invalid form.', 400);
+            }
 
             // check if answer is required, but the value is empty.
-            const isEmptyAnswer = await requiredButEmpty(isUserForm, payload.data);
+            const isEmptyAnswer = await requiredButEmpty(form, payload.data);
             if (isEmptyAnswer) throw new CustomError('answer is required.', 400);
 
             // check question id is valid
-            const isValidQuestion = validateQuestionId(isUserForm, payload.data);
+            const isValidQuestion = validateQuestionId(form, payload.data);
             if (!isValidQuestion) throw new CustomError('question id is not valid.', 400);
 
             // check email is valid
-            const isValidEmail = validateEmail(isUserForm, payload.data);
+            const isValidEmail = validateEmail(form, payload.data);
             if (!isValidEmail) throw new CustomError('email is not valid.', 400);
 
             // check if user's answer is not available in options
-            const isAvailableAnswer = availableAnswer(isUserForm, payload.data);
+            const isAvailableAnswer = availableAnswer(form, payload.data);
             if (isAvailableAnswer) throw new CustomError('answer is not available in options.', 400);
 
             // store to db..
