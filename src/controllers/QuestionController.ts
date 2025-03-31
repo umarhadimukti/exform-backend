@@ -11,6 +11,7 @@ import { randomUUID } from "crypto";
 class QuestionController
 {
     protected readonly allowedTypes: string[] = ['text', 'checkbox', 'radio', 'email', 'dropdown'];
+    protected readonly typesWithOptions: string[] = ['checkbox', 'radio', 'dropdown'];
 
     public async index (req: Request, res: Response): Promise<Response>
     {
@@ -99,6 +100,10 @@ class QuestionController
 
             if (!this.allowedTypes.includes(validated.type)) {
                 throw new CustomError(`field 'type' must be (${ this.allowedTypes.join(', ') })`, 428);
+            }
+
+            if (this.typesWithOptions.includes(validated?.type) && validated?.options?.length === 0) {
+                throw new CustomError(`options is required.`, 400);
             }
 
             const optionsWithId = validated.options.map((opt, index) => {
