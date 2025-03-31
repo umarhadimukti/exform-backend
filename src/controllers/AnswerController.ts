@@ -6,6 +6,7 @@ import { PayloadAnswer, PayloadQuestionAnswers } from "../types/payloadType";
 import { availableAnswer } from "../libs/availableAnswer";
 import { validateQuestionId } from "../libs/validateQuestionId";
 import { validateEmail } from "../libs/validateEmail";
+import { AnswerQuestion, QuestionForm } from "../types/questionType";
 
 class AnswerController
 {
@@ -40,15 +41,22 @@ class AnswerController
                         select: {
                             value: true,
                         },
-                        take: 1,
-                        orderBy: { created_at: 'desc' }
                     }
                 }
             });
 
+            const transformedQuestionForm = questionForm.map((question: QuestionForm) => {
+                return {
+                    id: question?.id,
+                    form_id: question?.form_id,
+                    question: question?.question,
+                    answers: question?.answers.map((answer: AnswerQuestion) => answer.value),
+                };
+            });
+
             return res.status(200).json({
                 status: true,
-                data: questionForm,
+                data: transformedQuestionForm,
             });
         } catch (error) {
             return res
