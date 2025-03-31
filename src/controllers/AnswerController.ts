@@ -88,6 +88,7 @@ class AnswerController
 
             if (!form) throw new CustomError('form not found.', 404);
 
+            //  if the form is not belong to the current user (or user invited), then return invalid
             if (user?.id !== form.user_id || !form.is_public) {
                 if (form?.invites.includes(user?.id)) throw new CustomError('invalid form.', 400);
             }
