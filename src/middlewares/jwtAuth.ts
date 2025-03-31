@@ -16,7 +16,7 @@ export default function jwtAuth ()
             const { authorization } = req.headers;
 
             if (!authorization) {
-                throw new CustomError('unauthorized', 403);
+                throw new CustomError('unauthorized', 401);
             }
 
             const tokenParts: string[] = authorization.split(' ');
