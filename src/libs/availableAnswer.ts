@@ -39,5 +39,5 @@ export const availableAnswer = (form: FormWithQuestions, payload: PayloadQuestio
         }
     });
 
-    return foundQuestion.length > 0 ? true : false;
+    return foundQuestion.length > 0 ? false : true;
 }

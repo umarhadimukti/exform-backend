@@ -107,7 +107,7 @@ class AnswerController
 
             // check if user's answer is not available in options
             const isAvailableAnswer = availableAnswer(form, payload.data);
-            if (isAvailableAnswer) throw new CustomError('answer is not available in options.', 400);
+            if (!isAvailableAnswer) throw new CustomError('answer is not available in options.', 400);
 
             // store to db..
             const answerToBeStore: PayloadAnswer[] = [];
