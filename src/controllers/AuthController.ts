@@ -112,6 +112,21 @@ class AuthController
             const accessToken = this.authService.generateToken(user, AuthController.JWT_ACCESS_TOKEN, { expiresIn: '1d' });
             const refreshToken = this.authService.generateToken(user, AuthController.JWT_REFRESH_TOKEN, { expiresIn: '7d' });
 
+            res.cookie('accessToken', accessToken, {
+                httpOnly: true,
+                secure: process.env.APP_ENV as string === 'production',
+                sameSite: process.env.APP_ENV as string === 'production' ? 'strict' : 'lax',
+                maxAge: 1000 * 60 * 60 * 24, // 1 day (same with token expired)
+            });
+
+            res.cookie('refreshToken', refreshToken, {
+                httpOnly: true,
+                secure: process.env.APP_ENV as string === 'production',
+                sameSite: process.env.APP_ENV as string === 'production' ? 'strict' : 'lax',
+                maxAge: 1000 * 60 * 60 * 24 * 7, // 7 day
+                path: '/refresh-token'
+            });
+
             return res.status(200).json({
                 status: true,
                 message: 'login success.',
@@ -119,8 +134,6 @@ class AuthController
                     fullName: `${user.first_name} ${user.last_name ?? ''}`.trim(),
                     email: user.email,
                 },
-                accessToken,
-                refreshToken,
             })
         } catch (error) {
             return res.status(error instanceof CustomError ? error.statusCode : 500).json({
