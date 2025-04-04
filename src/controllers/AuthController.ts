@@ -160,7 +160,7 @@ class AuthController
 
             const { iat, exp, ...userData } = verifiedToken as JwtPayload;
 
-            const accessToken = this.authService.generateToken(userData, AuthController.JWT_ACCESS_TOKEN, { expiresIn: '1h' });
+            const accessToken = this.authService.generateToken(userData, AuthController.JWT_ACCESS_TOKEN, { expiresIn: '1d' });
             const refreshToken = this.authService.generateToken(userData, AuthController.JWT_REFRESH_TOKEN, { expiresIn: '7d' });
 
             // set cookies untuk access token baru
@@ -168,7 +168,7 @@ class AuthController
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-                maxAge: 60 * 60 * 1000, // 1 jam dalam milidetik
+                maxAge: 24 * 60 * 60 * 1000, // 1 day in milisecond
             });
 
             // set cookies untuk refresh token baru
@@ -176,7 +176,7 @@ class AuthController
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-                maxAge: 7 * 24 * 60 * 60 * 1000, // 7 hari dalam milidetik
+                maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day in milisecond
                 path: '/refresh-token',
             });
 
@@ -188,7 +188,7 @@ class AuthController
             // clear cookie if there's an error detected
             res.clearCookie('accessToken');
             res.clearCookie('refreshToken');
-            
+
             return res.status(error instanceof CustomError ? error.statusCode : 500).json({
                 status: false,
                 message: `failed to refresh token: ${error instanceof Error ? error.message : error}`,
