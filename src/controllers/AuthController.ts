@@ -244,6 +244,31 @@ class AuthController
             });
         }
     }
+
+    public async logout (req: Request, res: Response): Promise<Response>
+    {
+        try {
+            // clear both access token and refresh token cookies
+            res.clearCookie('accessToken');
+
+            res.clearCookie('refreshToken', {
+                httpOnly: true,
+                secure: process.env.APP_ENV as string === 'production',
+                sameSite: process.env.APP_ENV as string === 'production' ? 'strict' : 'lax',
+                path: '/refresh-token'
+            });
+
+            return res.status(200).json({
+                status: true,
+                message: 'logout successful.',
+            });
+        } catch (error) {
+            return res.status(500).json({
+                status: false,
+                message: `failed to logout: ${error instanceof Error ? error.message : error}`,
+            });
+        }
+    }
 }
 
 export default new AuthController;
