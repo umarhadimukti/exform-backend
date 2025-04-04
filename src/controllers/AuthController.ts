@@ -42,13 +42,26 @@ class AuthController
             const accessToken = this.authService.generateToken(newUser, AuthController.JWT_ACCESS_TOKEN, { expiresIn: '1h' });
             const refreshToken = this.authService.generateToken(newUser, AuthController.JWT_REFRESH_TOKEN, { expiresIn: '1h' });
 
+            res.cookie('accessToken', accessToken, {
+                httpOnly: true,
+                secure: process.env.APP_ENV as string === 'production',
+                sameSite: process.env.APP_ENV as string === 'production' ? 'strict' : 'lax',
+                maxAge: 1000 * 60 * 60 * 24, // 1 day (same with token expired)
+            });
+
+            res.cookie('refreshToken', refreshToken, {
+                httpOnly: true,
+                secure: process.env.APP_ENV as string === 'production',
+                sameSite: process.env.APP_ENV as string === 'production' ? 'strict' : 'lax',
+                maxAge: 1000 * 60 * 60 * 24 * 7, // 7 day
+                path: '/refresh-token'
+            });
+
             return res.status(201).json({
                 status: true,
                 message: 'user successfully registered.',
                 data: newUser,
-                accessToken,
-                refreshToken,
-            })
+            });
         } catch (error) {
             if (error instanceof z.ZodError) {
                 const formattedErrors = error.errors.map(err => {
