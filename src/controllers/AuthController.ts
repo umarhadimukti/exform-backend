@@ -39,8 +39,28 @@ class AuthController
                 },
             });
 
-            const accessToken = this.authService.generateToken(newUser, AuthController.JWT_ACCESS_TOKEN, { expiresIn: '1d' });
-            const refreshToken = this.authService.generateToken(newUser, AuthController.JWT_REFRESH_TOKEN, { expiresIn: '7d' });
+            const accessToken = this.authService.generateToken(
+                {
+                    firstName: newUser.first_name, 
+                    lastName: newUser.last_name ?? '',
+                    fullName: `${newUser.first_name} ${newUser.last_name ?? ''}`.trim(),
+                    email: newUser.email,
+                    roleId: newUser.role_id,
+                },
+                AuthController.JWT_ACCESS_TOKEN,
+                { expiresIn: '1d' }
+            );
+            const refreshToken = this.authService.generateToken(
+                {
+                    firstName: newUser.first_name, 
+                    lastName: newUser.last_name ?? '',
+                    fullName: `${newUser.first_name} ${newUser.last_name ?? ''}`.trim(),
+                    email: newUser.email,
+                    roleId: newUser.role_id,
+                },
+                AuthController.JWT_REFRESH_TOKEN,
+                { expiresIn: '7d' }
+            );
 
             res.cookie('accessToken', accessToken, {
                 httpOnly: true,
@@ -115,8 +135,28 @@ class AuthController
                 throw new CustomError('invalid email or password.', 401);
             }
 
-            const accessToken = this.authService.generateToken(user, AuthController.JWT_ACCESS_TOKEN, { expiresIn: '1d' });
-            const refreshToken = this.authService.generateToken(user, AuthController.JWT_REFRESH_TOKEN, { expiresIn: '7d' });
+            const accessToken = this.authService.generateToken(
+                {
+                    firstName: user.first_name, 
+                    lastName: user.last_name ?? '',
+                    fullName: `${user.first_name} ${user.last_name ?? ''}`.trim(),
+                    email: user.email,
+                    roleId: user.role_id,
+                },
+                AuthController.JWT_ACCESS_TOKEN,
+                { expiresIn: '1d' }
+            );
+            const refreshToken = this.authService.generateToken(
+                {
+                    firstName: user.first_name, 
+                    lastName: user.last_name ?? '',
+                    fullName: `${user.first_name} ${user.last_name ?? ''}`.trim(),
+                    email: user.email,
+                    roleId: user.role_id,
+                },
+                AuthController.JWT_REFRESH_TOKEN,
+                { expiresIn: '7d' }
+            );
 
             res.cookie('accessToken', accessToken, {
                 httpOnly: true,
