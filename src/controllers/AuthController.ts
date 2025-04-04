@@ -60,7 +60,13 @@ class AuthController
             return res.status(201).json({
                 status: true,
                 message: 'user successfully registered.',
-                data: newUser,
+                userInformation: {
+                    firstName: newUser.first_name,
+                    lastName: newUser?.last_name ?? '',
+                    fullName: `${newUser.first_name} ${newUser.last_name ?? ''}`.trim(),
+                    email: newUser.email,
+                    roleId: newUser.role_id,
+                },
             });
         } catch (error) {
             if (error instanceof z.ZodError) {
@@ -131,8 +137,11 @@ class AuthController
                 status: true,
                 message: 'login success.',
                 userInformation: {
+                    firstName: user.first_name,
+                    lastName: user.last_name,
                     fullName: `${user.first_name} ${user.last_name ?? ''}`.trim(),
                     email: user.email,
+                    roleId: user.role_id,
                 },
             })
         } catch (error) {
