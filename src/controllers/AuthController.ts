@@ -39,8 +39,8 @@ class AuthController
                 },
             });
 
-            const accessToken = this.authService.generateToken(newUser, AuthController.JWT_ACCESS_TOKEN, { expiresIn: '1h' });
-            const refreshToken = this.authService.generateToken(newUser, AuthController.JWT_REFRESH_TOKEN, { expiresIn: '1h' });
+            const accessToken = this.authService.generateToken(newUser, AuthController.JWT_ACCESS_TOKEN, { expiresIn: '1d' });
+            const refreshToken = this.authService.generateToken(newUser, AuthController.JWT_REFRESH_TOKEN, { expiresIn: '7d' });
 
             res.cookie('accessToken', accessToken, {
                 httpOnly: true,
