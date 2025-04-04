@@ -6,6 +6,7 @@ import authRoutes from "./routes/auth";
 import seedRoutes from "./routes/seed";
 import { notFoundHandler } from "./middlewares/notFound";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ const port = process.env.DEFAULT_PORT || 3002;
 // built-in middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // cors
 app.use(cors({
