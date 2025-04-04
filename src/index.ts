@@ -17,7 +17,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // cors
-app.use(cors({ origin: 'localhost:3003' }));
+app.use(cors({
+    origin: ['http://127.0.0.1:3000', 'http://localhost:3000'],
+    methods: ['GET', 'PUT', 'POST', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true, // allowed send cookies and headers authentication
+}));
 
 // connection to db
 connectDB();
