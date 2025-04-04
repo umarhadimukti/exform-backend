@@ -146,13 +146,13 @@ class AuthController
     public async refreshToken (req: Request, res: Response): Promise<Response>
     {
         try {
-            const { token: tokenPayload } = req.body;
+            const { refreshToken: refreshTokenFromCookie } = req.cookies;
 
-            if (!tokenPayload) {
+            if (!refreshTokenFromCookie) {
                 throw new CustomError('token doesn\'t exists.', 400);
             }
 
-            const verifiedToken: JwtPayload | unknown = this.authService.verifyToken(tokenPayload, AuthController.JWT_REFRESH_TOKEN);
+            const verifiedToken: JwtPayload | unknown = this.authService.verifyToken(refreshTokenFromCookie, AuthController.JWT_REFRESH_TOKEN);
 
             if (!verifiedToken || typeof verifiedToken !== 'object') {
                 throw new CustomError('invalid or expired token.', 400);
@@ -163,13 +163,32 @@ class AuthController
             const accessToken = this.authService.generateToken(userData, AuthController.JWT_ACCESS_TOKEN, { expiresIn: '1h' });
             const refreshToken = this.authService.generateToken(userData, AuthController.JWT_REFRESH_TOKEN, { expiresIn: '7d' });
 
+            // set cookies untuk access token baru
+            res.cookie('accessToken', accessToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+                maxAge: 60 * 60 * 1000, // 1 jam dalam milidetik
+            });
+
+            // set cookies untuk refresh token baru
+            res.cookie('refreshToken', refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+                maxAge: 7 * 24 * 60 * 60 * 1000, // 7 hari dalam milidetik
+                path: '/refresh-token',
+            });
+
             return res.status(200).json({
                 status: true,
                 message: 'token successfully refreshed.',
-                accessToken,
-                refreshToken,
             });
         } catch (error) {
+            // clear cookie if there's an error detected
+            res.clearCookie('accessToken');
+            res.clearCookie('refreshToken');
+            
             return res.status(error instanceof CustomError ? error.statusCode : 500).json({
                 status: false,
                 message: `failed to refresh token: ${error instanceof Error ? error.message : error}`,
