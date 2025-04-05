@@ -11,6 +11,10 @@ import ResponseController from "../controllers/ResponseController";
 
 const router: Router = Router();
 
+router.get('/current-user', jwtAuth(), async (req: Request, res: Response) => {
+    await UserController.getCurrentUser(req, res);
+});
+
 // response routes
 router.get('/form/:formId/list-response', jwtAuth(), async (req: Request, res: Response) => {
     await ResponseController.index(req, res);
