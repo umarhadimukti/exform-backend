@@ -16,7 +16,7 @@ class UserController
     public async getCurrentUser (req: Request, res: Response): Promise<Response> {
         const authService: AuthService = new AuthService();
         try {
-            const { accessToken } = req.cookies;
+            const { at: accessToken } = req.cookies;
 
             if (!accessToken || typeof accessToken !== 'string') throw new CustomError('no token provided.', 401);
 

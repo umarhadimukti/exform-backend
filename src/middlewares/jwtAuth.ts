@@ -14,6 +14,7 @@ export default function jwtAuth ()
     return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { authorization } = req.headers;
+            const { at: accessToken } = req.cookies;
             
             let token: string | undefined = '';
 
@@ -21,8 +22,8 @@ export default function jwtAuth ()
                 token = authorization.split(' ')[1];
             }
 
-            if (!token && req.cookies?.accessToken) {
-                token = req.cookies.accessToken;
+            if (!token && accessToken) {
+                token = accessToken;
             }
 
             if (!token) {
