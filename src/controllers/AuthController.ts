@@ -41,35 +41,27 @@ class AuthController
 
             const accessToken = this.authService.generateToken(
                 {
-                    firstName: newUser.first_name, 
-                    lastName: newUser.last_name ?? '',
-                    fullName: `${newUser.first_name} ${newUser.last_name ?? ''}`.trim(),
                     email: newUser.email,
-                    roleId: newUser.role_id,
                 },
                 AuthController.JWT_ACCESS_TOKEN,
-                { expiresIn: '1d' }
+                { expiresIn: 1000 * 60 * 15 }
             );
             const refreshToken = this.authService.generateToken(
                 {
-                    firstName: newUser.first_name, 
-                    lastName: newUser.last_name ?? '',
-                    fullName: `${newUser.first_name} ${newUser.last_name ?? ''}`.trim(),
                     email: newUser.email,
-                    roleId: newUser.role_id,
                 },
                 AuthController.JWT_REFRESH_TOKEN,
                 { expiresIn: '7d' }
             );
 
-            res.cookie('accessToken', accessToken, {
+            res.cookie('at', accessToken, {
                 httpOnly: true,
                 secure: process.env.APP_ENV as string === 'production',
                 sameSite: process.env.APP_ENV as string === 'production' ? 'strict' : 'lax',
-                maxAge: 1000 * 60 * 60 * 24, // 1 day (same with token expired)
+                maxAge: 1000 * 60 * 15, // (same with token expired)
             });
 
-            res.cookie('refreshToken', refreshToken, {
+            res.cookie('rt', refreshToken, {
                 httpOnly: true,
                 secure: process.env.APP_ENV as string === 'production',
                 sameSite: process.env.APP_ENV as string === 'production' ? 'strict' : 'lax',
@@ -137,35 +129,27 @@ class AuthController
 
             const accessToken = this.authService.generateToken(
                 {
-                    firstName: user.first_name, 
-                    lastName: user.last_name ?? '',
-                    fullName: `${user.first_name} ${user.last_name ?? ''}`.trim(),
                     email: user.email,
-                    roleId: user.role_id,
                 },
                 AuthController.JWT_ACCESS_TOKEN,
-                { expiresIn: '1d' }
+                { expiresIn: 1000 * 60 * 15 }
             );
             const refreshToken = this.authService.generateToken(
                 {
-                    firstName: user.first_name, 
-                    lastName: user.last_name ?? '',
-                    fullName: `${user.first_name} ${user.last_name ?? ''}`.trim(),
                     email: user.email,
-                    roleId: user.role_id,
                 },
                 AuthController.JWT_REFRESH_TOKEN,
                 { expiresIn: '7d' }
             );
 
-            res.cookie('accessToken', accessToken, {
+            res.cookie('at', accessToken, {
                 httpOnly: true,
                 secure: process.env.APP_ENV as string === 'production',
                 sameSite: process.env.APP_ENV as string === 'production' ? 'strict' : 'lax',
-                maxAge: 1000 * 60 * 60 * 24, // 1 day (same with token expired)
+                maxAge: 1000 * 60 * 15, // (same with token expired)
             });
 
-            res.cookie('refreshToken', refreshToken, {
+            res.cookie('rt', refreshToken, {
                 httpOnly: true,
                 secure: process.env.APP_ENV as string === 'production',
                 sameSite: process.env.APP_ENV as string === 'production' ? 'strict' : 'lax',
@@ -209,19 +193,19 @@ class AuthController
 
             const { iat, exp, ...userData } = verifiedToken as JwtPayload;
 
-            const accessToken = this.authService.generateToken(userData, AuthController.JWT_ACCESS_TOKEN, { expiresIn: '1d' });
+            const accessToken = this.authService.generateToken(userData, AuthController.JWT_ACCESS_TOKEN, { expiresIn: 1000 * 60 * 15 });
             const refreshToken = this.authService.generateToken(userData, AuthController.JWT_REFRESH_TOKEN, { expiresIn: '7d' });
 
             // set cookies untuk access token baru
-            res.cookie('accessToken', accessToken, {
+            res.cookie('at', accessToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-                maxAge: 24 * 60 * 60 * 1000, // 1 day in milisecond
+                maxAge: 1000 * 60 * 15, // in milisecond
             });
 
             // set cookies untuk refresh token baru
-            res.cookie('refreshToken', refreshToken, {
+            res.cookie('rt', refreshToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
@@ -235,8 +219,8 @@ class AuthController
             });
         } catch (error) {
             // clear cookie if there's an error detected
-            res.clearCookie('accessToken');
-            res.clearCookie('refreshToken');
+            res.clearCookie('at');
+            res.clearCookie('rt');
 
             return res.status(error instanceof CustomError ? error.statusCode : 500).json({
                 status: false,
@@ -249,9 +233,9 @@ class AuthController
     {
         try {
             // clear both access token and refresh token cookies
-            res.clearCookie('accessToken');
+            res.clearCookie('at');
 
-            res.clearCookie('refreshToken', {
+            res.clearCookie('rt', {
                 httpOnly: true,
                 secure: process.env.APP_ENV as string === 'production',
                 sameSite: process.env.APP_ENV as string === 'production' ? 'strict' : 'lax',
