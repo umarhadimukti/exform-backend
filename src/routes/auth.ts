@@ -12,7 +12,7 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
     await AuthController.login(req, res);
 });
 
-router.post('/logout', async (req: Request, res: Response): Promise<void> => {
+router.post('/logout', jwtAuth(), async (req: Request, res: Response): Promise<void> => {
     await AuthController.logout(req, res);
 });
 

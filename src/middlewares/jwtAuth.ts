@@ -14,18 +14,20 @@ export default function jwtAuth ()
     return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { authorization } = req.headers;
-
-            if (!authorization) {
-                throw new CustomError('unauthorized', 401);
-            }
-
-            const tokenParts: string[] = authorization.split(' ');
             
-            if (tokenParts.length !== 2 || tokenParts[0] !== 'Bearer') {
-                throw new CustomError('invalid token format.', 400);
+            let token: string | undefined = '';
+
+            if (authorization?.startsWith('Bearer ')) {
+                token = authorization.split(' ')[1];
             }
 
-            const token: string = tokenParts[1]; // Bearer <token>
+            if (!token && req.cookies?.accessToken) {
+                token = req.cookies.accessToken;
+            }
+
+            if (!token) {
+                throw new CustomError('unauthorized: token missing', 401);
+            }
 
             const verified: JwtPayload | unknown = authService.verifyToken(token, JWT_ACCESS_TOKEN);
 
