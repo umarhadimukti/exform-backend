@@ -17,7 +17,7 @@ class FormController
             const { page, limit } = req.query;
 
             const pageQuery: number = parseInt(page as string, 10) || 1;
-            const limitQuery: number = parseInt(limit as string, 10) || 5;
+            const limitQuery: number = parseInt(limit as string, 10) || 15;
 
             if (pageQuery < 1 || limitQuery < 1) throw new CustomError('page or size invalid', 400);
 
