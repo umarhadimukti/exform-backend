@@ -34,9 +34,11 @@ class FormController
 
             if (pageQuery < 1 || limitQuery < 1) throw new CustomError('page or size invalid', 400);
 
+            const userId: number = await this.getUserId(user?.email);
+
             // user forms
             const forms: Form[] = await prisma.form.findMany({
-                where: { user_id: user?.id },
+                where: { user_id: userId },
             });
 
             // find total row
@@ -71,10 +73,10 @@ class FormController
     {
         try {
             const { body: payload, user } = req;
-            
-            const userId: number = await this.getUserId(user?.email);
 
             const validated = formSchema.parse(payload);
+            
+            const userId: number = await this.getUserId(user?.email);
             
             const form = await prisma.form.create({
                 data: {
@@ -123,8 +125,10 @@ class FormController
 
             if (!formId || typeof formId !== 'string') throw new CustomError('invalid form id.', 400);
 
+            const userId: number = await this.getUserId(user?.email);
+
             const form = await prisma.form.findFirst({
-                where: { id: formId, user_id: user?.id }
+                where: { id: formId, user_id: userId }
             })
 
             if (!form) throw new CustomError('form not found.', 404); 
@@ -132,7 +136,7 @@ class FormController
             const updatedForm = await prisma.form.update({
                 where: {
                     id: formId,
-                    user_id: user?.id,
+                    user_id: userId,
                 },
                 data: payload
             });
@@ -166,10 +170,12 @@ class FormController
                 throw new CustomError('unauthorized.', 403);
             }
 
+            const userId: number = await this.getUserId(user?.email);
+
             const form = await prisma.form.findFirst({
                 where: {
                     id: formId,
-                    user_id: user.id,
+                    user_id: userId,
                 }
             });
 
@@ -239,14 +245,18 @@ class FormController
             const { id: formId } = req.params;
             const { user } = req;
 
+            console.log(formId)
+
             if (!formId) {
                 throw new CustomError('invalid form id.', 400);
             }
 
+            const userId: number = await this.getUserId(user?.email);
+
             const form = await prisma.form.findFirst({
                 where: {
                     id: formId,
-                    user_id: user?.id,
+                    user_id: userId,
                 }
             });
 
@@ -257,7 +267,7 @@ class FormController
             const formToBeDeleted = await prisma.form.delete({
                 where: {
                     id: formId,
-                    user_id: user?.id,
+                    user_id: userId,
                 }
             });
 
