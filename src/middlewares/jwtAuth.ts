@@ -18,7 +18,6 @@ export default function jwtAuth ()
             
             let token: string | undefined = '';
 
-
             if (authorization?.startsWith('Bearer ')) {
                 token = authorization.split(' ')[1];
             }

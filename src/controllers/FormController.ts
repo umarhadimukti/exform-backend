@@ -245,8 +245,6 @@ class FormController
             const { id: formId } = req.params;
             const { user } = req;
 
-            console.log(formId)
-
             if (!formId) {
                 throw new CustomError('invalid form id.', 400);
             }
