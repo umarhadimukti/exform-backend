@@ -5,7 +5,7 @@ export type QuestionOptions = {
 
 export type QuestionForm = {
     id: number,
-    form_id: number,
+    form_id: string,
     question: string,
     answers: {
         value: string

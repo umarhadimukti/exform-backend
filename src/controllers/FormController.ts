@@ -8,6 +8,19 @@ import { Form } from "@prisma/client";
 
 class FormController
 {
+    private async getUserId(email?: string): Promise<number> {
+        if (!email) throw new CustomError('User email not found', 401);
+      
+        const user = await prisma.user.findUnique({
+          where: { email },
+          select: { id: true }
+        });
+      
+        if (!user) throw new CustomError('User not found', 404);
+      
+        return user.id;
+      }
+
     public async index (req: Request, res: Response): Promise<Response>
     {
         const pagination = new Pagination<Form>();
@@ -58,6 +71,8 @@ class FormController
     {
         try {
             const { body: payload, user } = req;
+            
+            const userId: number = await this.getUserId(user?.email);
 
             const validated = formSchema.parse(payload);
             
@@ -65,7 +80,7 @@ class FormController
                 data: {
                     title: validated.title,
                     description: validated.description,
-                    user_id: user?.id,
+                    user_id: userId,
                     invites: validated.invites,
                 }
             });

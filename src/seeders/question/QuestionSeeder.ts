@@ -1,11 +1,12 @@
 import { faker } from "@faker-js/faker";
 import { prisma } from "../../db/connection";
 import { Form } from "@prisma/client";
+import { v4 as uuidv4 } from 'uuid';
 
 class QuestionSeeder
 {
 
-    public factory(formId: number)
+    public factory(formId: string)
     {
         
         // question types
@@ -51,7 +52,7 @@ class QuestionSeeder
                 // get random form
                 const form = forms[Math.floor(Math.random() * forms.length)];
                 
-                await prisma.question.create(this.factory(form.id));
+                await prisma.question.create(this.factory(uuidv4()));
             }
 
         } catch (error) {

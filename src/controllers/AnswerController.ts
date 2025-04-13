@@ -17,14 +17,12 @@ class AnswerController
             const { user } = req;
             const { formId } = req.params;
 
-            const parsedFormId: number = parseInt(formId, 10);
-
-            if (isNaN(parsedFormId)) {
+            if (!formId) {
                 throw new CustomError('invalid form id.', 400);
             }
 
             const isUserForm = await prisma.form.findMany({
-                where: { id: parsedFormId, user_id: user?.id },
+                where: { id: formId, user_id: user?.id },
             });
 
             if (!isUserForm) {
@@ -32,7 +30,7 @@ class AnswerController
             }
 
             const questionForm = await prisma.question.findMany({
-                where: { form_id: parsedFormId },
+                where: { form_id: formId },
                 select: {
                     id: true,
                     form_id: true,
@@ -75,12 +73,10 @@ class AnswerController
             const { formId } = req.params;
             const payload = req.body;
 
-            const parsedFormId: number= parseInt(formId, 10);
-
-            if (isNaN(parsedFormId)) throw new CustomError('form id is invalid.', 400);
+            if (!formId) throw new CustomError('form id is invalid.', 400);
 
             const form = await prisma.form.findFirst({
-                where: { id: parsedFormId },
+                where: { id: formId },
                 include: {
                     questions: true,
                 },
@@ -115,7 +111,7 @@ class AnswerController
             payload.data.forEach((data: PayloadQuestionAnswers) => {
                 answerToBeStore.push({
                     user_id: user?.id,
-                    form_id: parsedFormId,
+                    form_id: formId,
                     question_id: data.question_id,
                     value: Array.isArray(data.answer) ? data.answer.join(', ') : data.answer,
                 });

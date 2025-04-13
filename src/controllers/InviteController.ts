@@ -13,11 +13,10 @@ class InviteController extends BaseController {
             const { user } = req;
             const { formId } = req.params;
 
-            const parsedFormId: number = parseInt(formId, 10);
-            if (!parsedFormId || isNaN(parsedFormId)) throw new CustomError('invalid form id.', 400);
+            if (!formId) throw new CustomError('invalid form id.', 400);
 
             const isUserForm: Form | null = await prisma.form.findFirst({
-                where: { user_id: user?.id, id: parsedFormId }
+                where: { user_id: user?.id, id: formId }
             });
             if (!isUserForm) throw new CustomError('invalid form (you don\'t have access with this form.', 400);
 
@@ -38,11 +37,10 @@ class InviteController extends BaseController {
             const { formId } = req.params;
             const payload = req.body;
 
-            const parsedFormId: number = parseInt(formId, 10);
-            if (!parsedFormId || isNaN(parsedFormId)) throw new CustomError('invalid form id.', 400);
+            if (!formId) throw new CustomError('invalid form id.', 400);
 
             const isUserForm: Form | null = await prisma.form.findFirst({
-                where: { user_id: user?.id, id: parsedFormId }
+                where: { user_id: user?.id, id: formId }
             });
             if (!isUserForm) throw new CustomError('invalid form (you don\'t have access with this form.', 400);
 
@@ -93,11 +91,10 @@ class InviteController extends BaseController {
             const { formId } = req.params;
             const payload = req.body;
 
-            const parsedFormId: number = parseInt(formId, 10);
-            if (!parsedFormId || isNaN(parsedFormId)) throw new CustomError('invalid form id.', 400);
+            if (!formId) throw new CustomError('invalid form id.', 400);
 
             const isUserForm: Form | null = await prisma.form.findFirst({
-                where: { user_id: user?.id, id: parsedFormId }
+                where: { user_id: user?.id, id: formId }
             });
             if (!isUserForm) throw new CustomError('invalid form (you don\'t have access with this form.', 400);
 

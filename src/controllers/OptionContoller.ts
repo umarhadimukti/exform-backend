@@ -13,16 +13,15 @@ class OptionController
             const { options } = req.body;
             const user: JwtPayload | { id: number } | undefined = req.user;
 
-            const parsedFormId: number = parseInt(formId, 10);
             const parsedQuestionId: number = parseInt(questionId, 10);
 
-            if (isNaN(parsedFormId) ||  isNaN(parsedQuestionId)) {
+            if (!formId ||  isNaN(parsedQuestionId)) {
                 throw new CustomError('form id or question id is invalid.', 400);
             }
 
             const userForm = await prisma.form.findUnique({
                 where: {
-                    id: parsedFormId,
+                    id: formId,
                     user_id: user?.id,
                 }
             })
@@ -85,16 +84,15 @@ class OptionController
             const { user } = req;
             const payload = req.body;
 
-            const parsedFormId: number = parseInt(formId, 10);
             const parsedQuestionId: number = parseInt(questionId, 10);
 
-            if (isNaN(parsedFormId) ||  isNaN(parsedQuestionId)) {
+            if (!formId ||  isNaN(parsedQuestionId)) {
                 throw new CustomError('form id or question id is invalid.', 400);
             }
 
             const userForm = await prisma.form.findUnique({
                 where: {
-                    id: parsedFormId,
+                    id: formId,
                     user_id: user?.id,
                 }
             });
@@ -106,7 +104,7 @@ class OptionController
             const existingQuestion = await prisma.question.findFirst({
                 where: {
                     id: parsedQuestionId,
-                    form_id: parsedFormId,
+                    form_id: formId,
                 },
             });
 
@@ -158,16 +156,15 @@ class OptionController
             const { formId, questionId, optionId } = req.params;
             const { user } = req;
 
-            const parsedFormId: number = parseInt(formId, 10);
             const parsedQuestionId: number = parseInt(questionId, 10);
 
-            if (isNaN(parsedFormId) ||  isNaN(parsedQuestionId)) {
+            if (formId ||  isNaN(parsedQuestionId)) {
                 throw new CustomError('form id or question id is invalid.', 400);
             }
 
             const userForm = await prisma.form.findUnique({
                 where: {
-                    id: parsedFormId,
+                    id: formId,
                     user_id: user?.id,
                 }
             });
@@ -179,7 +176,7 @@ class OptionController
             const existingQuestion = await prisma.question.findFirst({
                 where: {
                     id: parsedQuestionId,
-                    form_id: parsedFormId,
+                    form_id: formId,
                 },
             });
 
