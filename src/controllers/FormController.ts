@@ -5,6 +5,8 @@ import { formSchema } from "../validators/formValidator";
 import { z } from "zod";
 import { Pagination } from "../libs/services/Pagination";
 import { Form } from "@prisma/client";
+import { v4 as uuidv4 } from "uuid";
+import { FormUUID } from "../types/formType";
 
 class FormController
 {
@@ -63,6 +65,7 @@ class FormController
             
             const form = await prisma.form.create({
                 data: {
+                    id: uuidv4(),
                     title: validated.title,
                     description: validated.description,
                     user_id: user?.id,
