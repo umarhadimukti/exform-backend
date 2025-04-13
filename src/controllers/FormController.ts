@@ -5,8 +5,6 @@ import { formSchema } from "../validators/formValidator";
 import { z } from "zod";
 import { Pagination } from "../libs/services/Pagination";
 import { Form } from "@prisma/client";
-import { v4 as uuidv4 } from "uuid";
-import { FormUUID } from "../types/formType";
 
 class FormController
 {
@@ -65,7 +63,6 @@ class FormController
             
             const form = await prisma.form.create({
                 data: {
-                    id: uuidv4(),
                     title: validated.title,
                     description: validated.description,
                     user_id: user?.id,
@@ -109,17 +106,17 @@ class FormController
             const { id: formId } = req.params;
             const { body: payload, user } = req;
 
-            if (!formId || isNaN(parseInt(formId, 10))) throw new CustomError('invalid form id.', 400);
+            if (!formId || typeof formId !== 'string') throw new CustomError('invalid form id.', 400);
 
             const form = await prisma.form.findFirst({
-                where: { id: parseInt(formId), user_id: user?.id }
+                where: { id: formId, user_id: user?.id }
             })
 
             if (!form) throw new CustomError('form not found.', 404); 
 
             const updatedForm = await prisma.form.update({
                 where: {
-                    id: parseInt(formId, 10),
+                    id: formId,
                     user_id: user?.id,
                 },
                 data: payload
@@ -146,7 +143,7 @@ class FormController
             const { id: formId } = req.params;
             const { user } = req;
 
-            if (!formId || isNaN(parseInt(formId, 10))) {
+            if (!formId) {
                 throw new CustomError('invalid form id.', 400);
             }
 
@@ -156,7 +153,7 @@ class FormController
 
             const form = await prisma.form.findFirst({
                 where: {
-                    id: parseInt(formId, 10),
+                    id: formId,
                     user_id: user.id,
                 }
             });
@@ -185,15 +182,13 @@ class FormController
             const { formId } = req.params;
             const { user } = req;
 
-            const parsedFormId: number = parseInt(formId, 10);
-
-            if (!formId || isNaN(parsedFormId)) {
+            if (!formId) {
                 throw new CustomError('invalid form id.', 400);
             }
 
             const form = await prisma.form.findFirst({
                 where: {
-                    id: parsedFormId,
+                    id: formId,
                 }
             });
 
@@ -229,13 +224,13 @@ class FormController
             const { id: formId } = req.params;
             const { user } = req;
 
-            if (!formId || isNaN(parseInt(formId, 10))) {
+            if (!formId) {
                 throw new CustomError('invalid form id.', 400);
             }
 
             const form = await prisma.form.findFirst({
                 where: {
-                    id: parseInt(formId, 10),
+                    id: formId,
                     user_id: user?.id,
                 }
             });
@@ -246,7 +241,7 @@ class FormController
 
             const formToBeDeleted = await prisma.form.delete({
                 where: {
-                    id: parseInt(formId, 10),
+                    id: formId,
                     user_id: user?.id,
                 }
             });
