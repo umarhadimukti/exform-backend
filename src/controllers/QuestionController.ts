@@ -20,7 +20,7 @@ class QuestionController
             const { formId } = req.params;
             const { page, limit } = req.query;
 
-            if (!formId || isNaN(parseInt(formId, 10))) {
+            if (!formId || !formId) {
                 throw new CustomError('form id is invalid.', 400);
             }
 
@@ -33,14 +33,14 @@ class QuestionController
 
             const questionsForm = await prisma.question.findMany({
                 where: {
-                    form_id: parseInt(formId, 10),
+                    form_id: formId,
                 }
             });
 
             const findTotal = async () => {
                 return await prisma.question.count({
                     where: {
-                        form_id: parseInt(formId, 10),
+                        form_id: formId,
                     }
                 });
             }
@@ -48,7 +48,7 @@ class QuestionController
             const findPaginate = async (skip: number, take: number) => {
                 return await prisma.question.findMany({
                     where: {
-                        form_id: parseInt(formId, 10),
+                        form_id: formId,
                     },
                     skip,
                     take,
@@ -81,13 +81,13 @@ class QuestionController
             const payload = req.body;
             const user: JwtPayload | { id: number } | undefined = req.user;
 
-            if (!formId || isNaN(parseInt(formId, 10))) {
+            if (!formId) {
                 throw new CustomError('invalid form id.', 400);
             }
 
             const userForm = await prisma.form.findUnique({
                 where: {
-                    id: parseInt(formId, 10),
+                    id: formId,
                     user_id: user?.id,
                 }
             })
@@ -158,17 +158,16 @@ class QuestionController
             const { formId, questionId } = req.params;
             const payload = req.body;
 
-            const parsedFormId: number = parseInt(formId, 10);
             const parsedQuestionId: number = parseInt(questionId, 10);
 
-            if (isNaN(parsedFormId) ||  isNaN(parsedQuestionId)) {
+            if (!formId ||  isNaN(parsedQuestionId)) {
                 throw new CustomError('form id or question id is invalid.', 400);
             }
 
             const existingQuestion = await prisma.question.findFirst({
                 where: {
                     id: parsedQuestionId,
-                    form_id: parsedFormId,
+                    form_id: formId,
                 },
             });
 
@@ -185,7 +184,7 @@ class QuestionController
             const question = await prisma.question.update({
                 where: {
                     id: parseInt(questionId, 10),
-                    form_id: parseInt(formId, 10),
+                    form_id: formId,
                 },
                 data: payload,
             });
@@ -214,17 +213,16 @@ class QuestionController
         try {
             const { formId, questionId } = req.params;
 
-            const parsedFormId: number = parseInt(formId, 10);
             const parsedQuestionId: number = parseInt(questionId, 10);
 
-            if (isNaN(parsedFormId) ||  isNaN(parsedQuestionId)) {
+            if (!formId ||  isNaN(parsedQuestionId)) {
                 throw new CustomError('form id or question id is invalid.', 400);
             }
 
             const existingQuestion = await prisma.question.findFirst({
                 where: {
                     id: parsedQuestionId,
-                    form_id: parsedFormId,
+                    form_id: formId,
                 },
             });
 
@@ -235,7 +233,7 @@ class QuestionController
             const questionToBeDeleted = await prisma.question.delete({
                 where: {
                     id: parsedQuestionId,
-                    form_id: parsedFormId,
+                    form_id: formId,
                 },
             });
 
