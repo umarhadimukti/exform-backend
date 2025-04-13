@@ -36,7 +36,7 @@ model User {
 }
 
 model Form {
-  id          Int        @id @default(autoincrement())
+  id          String        @id @default(uuid())
   title       String
   description String?
   is_public   Boolean    @default(true)
@@ -57,7 +57,7 @@ model Question {
   question   String
   options    Json?    @default("[]")
   required   Boolean
-  form_id    Int
+  form_id    String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   answers    Answer[]
@@ -69,7 +69,7 @@ model Question {
 model Answer {
   id          Int      @id @default(autoincrement())
   user_id     Int
-  form_id     Int
+  form_id     String
   question_id Int
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
