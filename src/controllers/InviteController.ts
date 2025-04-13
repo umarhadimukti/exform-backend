@@ -7,6 +7,18 @@ import { z, ZodError } from 'zod';
 import { Form } from '@prisma/client';
 
 class InviteController extends BaseController {
+    public async getUserId(email?: string): Promise<number> {
+        if (!email) throw new CustomError('user email not found', 401);
+        
+        const user = await prisma.user.findUnique({
+            where: { email },
+            select: { id: true }
+        });
+        
+        if (!user) throw new CustomError('user not found', 404);
+        
+        return user.id;
+    }
 
     public async index(req: Request, res: Response): Promise<Response> {
         try {
@@ -15,9 +27,12 @@ class InviteController extends BaseController {
 
             if (!formId) throw new CustomError('invalid form id.', 400);
 
+            const userId: number = await this.getUserId(user?.email);
+
             const isUserForm: Form | null = await prisma.form.findFirst({
-                where: { user_id: user?.id, id: formId }
+                where: { user_id: userId, id: formId }
             });
+
             if (!isUserForm) throw new CustomError('invalid form (you don\'t have access with this form.', 400);
 
             return res.status(200).json({
@@ -39,9 +54,12 @@ class InviteController extends BaseController {
 
             if (!formId) throw new CustomError('invalid form id.', 400);
 
+            const userId: number = await this.getUserId(user?.email);
+
             const isUserForm: Form | null = await prisma.form.findFirst({
-                where: { user_id: user?.id, id: formId }
+                where: { user_id: userId, id: formId }
             });
+
             if (!isUserForm) throw new CustomError('invalid form (you don\'t have access with this form.', 400);
 
             // validate payload
@@ -93,9 +111,12 @@ class InviteController extends BaseController {
 
             if (!formId) throw new CustomError('invalid form id.', 400);
 
+            const userId: number = await this.getUserId(user?.email);
+
             const isUserForm: Form | null = await prisma.form.findFirst({
-                where: { user_id: user?.id, id: formId }
+                where: { user_id: userId, id: formId }
             });
+            
             if (!isUserForm) throw new CustomError('invalid form (you don\'t have access with this form.', 400);
 
             // validate payload

@@ -9,14 +9,14 @@ import { Form } from "@prisma/client";
 class FormController
 {
     private async getUserId(email?: string): Promise<number> {
-        if (!email) throw new CustomError('User email not found', 401);
+        if (!email) throw new CustomError('user email not found', 401);
       
         const user = await prisma.user.findUnique({
           where: { email },
           select: { id: true }
         });
       
-        if (!user) throw new CustomError('User not found', 404);
+        if (!user) throw new CustomError('user not found', 404);
       
         return user.id;
       }
