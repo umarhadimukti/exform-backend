@@ -10,6 +10,18 @@ import { AnswerQuestion, QuestionForm } from "../types/questionType";
 
 class AnswerController
 {
+    public async getUserId(email?: string): Promise<number> {
+        if (!email) throw new CustomError('user email not found', 401);
+        
+        const user = await prisma.user.findUnique({
+            where: { email },
+            select: { id: true }
+        });
+        
+        if (!user) throw new CustomError('user not found', 404);
+        
+        return user.id;
+    }
 
     public async index (req: Request, res: Response): Promise<Response>
     {
