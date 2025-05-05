@@ -39,12 +39,10 @@ app.use(authRoutes);
 // seed routes
 app.use(seedRoutes);
 
+// swagger docs
+swaggerDocs(app, port);
+
 // handle 404 (not found route)
 app.use(notFoundHandler);
 
-app.listen(port, () => {
-    console.log(`server running at port ${port} 👾`);
-
-    // swagger docs
-    swaggerDocs(app, port);
-});
+app.listen(port, () => console.log(`server running at port ${port} 👾`));
