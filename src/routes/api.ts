@@ -12,20 +12,24 @@ import ResponseController from "../controllers/ResponseController";
 const router: Router = Router();
 
 /**
- * @swagger
+ * @openapi
  * /current-user:
- *  get:
- *    tags: [user]
- *    summary: get the information of the user who is currently logged in
- *    responses:
- *      200:
- *        description: successful get current user.
- *        content:
- *          application/json
- *      400:
- *        description: failed to get current user.
- *      500:
- *        description: internal server error.
+ *   get:
+ *     summary: get current signed in user
+ *     tags: [user]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: successfully get current user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *       401:
+ *         description: no token provided
+ *       500:
+ *         description: failed to get current user internal server error
  */
 
 router.get('/current-user', jwtAuth(), async (req: Request, res: Response) => {
