@@ -13,7 +13,7 @@ const router: Router = Router();
 
 /**
  * @openapi
- * /current-user:
+ * /api/v1/current-user:
  *   get:
  *     summary: get current signed in user
  *     tags: [user]
@@ -27,11 +27,10 @@ const router: Router = Router();
  *             schema:
  *               type: array
  *       401:
- *         description: no token provided
+ *         description: unauthorized, no token provided
  *       500:
- *         description: failed to get current user internal server error
+ *         description: failed to get current user, internal server error
  */
-
 router.get('/current-user', jwtAuth(), async (req: Request, res: Response) => {
     await UserController.getCurrentUser(req, res);
 });
@@ -108,6 +107,26 @@ router.delete('/form/:id', jwtAuth(), async (req: Request, res: Response) => {
 });
 
 // user routes
+/**
+ * @openapi
+ * /api/v1/users:
+ *   get:
+ *     summary: get all users
+ *     tags: [user]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: successfully get all users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *       401:
+ *         description: unauthorized, no token provided
+ *       500:
+ *         description: failed to get all users, internal server error
+ */
 router.get('/users', jwtAuth(),  async (req: Request, res: Response) => {
     await UserController.index(req, res);
 });
