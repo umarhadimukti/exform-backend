@@ -11,6 +11,23 @@ import ResponseController from "../controllers/ResponseController";
 
 const router: Router = Router();
 
+/**
+ * @swagger
+ * /current-user:
+ *  get:
+ *    tags: [user]
+ *    summary: get the information of the user who is currently logged in
+ *    responses:
+ *      200:
+ *        description: successful get current user.
+ *        content:
+ *          application/json
+ *      400:
+ *        description: failed to get current user.
+ *      500:
+ *        description: internal server error.
+ */
+
 router.get('/current-user', jwtAuth(), async (req: Request, res: Response) => {
     await UserController.getCurrentUser(req, res);
 });
