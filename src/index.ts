@@ -7,11 +7,12 @@ import seedRoutes from "./routes/seed";
 import { notFoundHandler } from "./middlewares/notFound";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import swaggerDocs from "./config/swagger";
 
 dotenv.config();
 
 const app: Express = express();
-const port = process.env.DEFAULT_PORT || 3002;
+const port = Number(process.env.DEFAULT_PORT) || 3002;
 
 // built-in middleware
 app.use(express.json());
@@ -41,4 +42,9 @@ app.use(seedRoutes);
 // handle 404 (not found route)
 app.use(notFoundHandler);
 
-app.listen(port, () => console.log(`server running at port ${port} 👾`));
+app.listen(port, () => {
+    console.log(`server running at port ${port} 👾`);
+
+    // swagger docs
+    swaggerDocs(app, port);
+});
