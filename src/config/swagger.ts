@@ -9,7 +9,7 @@ const swaggerOptions = {
     info: {
         title: 'Express API for Form Application',
         version: '1.0.0',
-        description: 'This is a simple CRUD API application made with Express and documented with Swagger',
+        description: 'Simple CRUD API application made with Express and documented with Swagger',
         contact: {
             name: 'Exform: Form Application',
             url: 'localhost:3000',
