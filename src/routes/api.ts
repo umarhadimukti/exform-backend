@@ -150,6 +150,36 @@ router.delete('/form/:id', jwtAuth(), async (req: Request, res: Response) => {
 router.get('/users', jwtAuth(),  async (req: Request, res: Response) => {
     await UserController.index(req, res);
 });
+
+/**
+ * @swagger
+ * /api/v1/users/{id}:
+ *   get:
+ *     summary: get user by id
+ *     tags: [user]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: user id
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: successfully get user by id
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   default: true
+ *                 data:
+ *                   $ref: '#/components/schemas/ShowUser'
+ */
 router.get('/users/:id', jwtAuth(), async (req: Request, res: Response) => {
     await UserController.show(req, res);
 });
