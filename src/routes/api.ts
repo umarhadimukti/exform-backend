@@ -183,6 +183,41 @@ router.get('/users', jwtAuth(),  async (req: Request, res: Response) => {
 router.get('/users/:id', jwtAuth(), async (req: Request, res: Response) => {
     await UserController.show(req, res);
 });
+
+/**
+ * @swagger
+ * /api/v1/users:
+ *   post:
+ *     summary: create new user
+ *     tags: [user]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateUser'
+ *     responses:
+ *       201:
+ *         description: successfully create new user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ShowUser'
+ *       400:
+ *         description: invalid request body
+ *       401:
+ *         description: unauthorized, no token provided
+ *       403:
+ *         description: forbidden, invalid token
+ *       500:
+ *         description: failed to create new user, internal server error
+ *       428:
+ *         description: precondition required, invalid request body
+ *       409:
+ *         description: conflict, email already exists
+ */
 router.post('/users', jwtAuth(), async (req: Request, res: Response) => {
     await UserController.create(req, res);
 });
