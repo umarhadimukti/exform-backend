@@ -1,14 +1,13 @@
 
 
 /**
- * @openapi
+ * @swagger
  * components:
  *   schemas:
  *     CurrentUser:
  *       type: object
  *       required:
  *         - first_name
- *         - last_name
  *         - email
  *         - password
  *         - status
@@ -16,20 +15,29 @@
  *       properties:
  *         first_name:
  *           type: string
- *           default: John
+ *           description: First name of the user
  *         last_name:
  *           type: string
- *           default: Doe
+ *           description: Last name of the user
  *         email:
  *           type: string
- *           default: johndoe@gmail.com
+ *           format: email
+ *           description: Email address of the user
  *         password:
  *           type: string
- *           default: test1234
+ *           description: Password of the user
  *         status:
  *           type: string
- *           default: ACTIVE
+ *           description: Status of the user
+ *           enum: [ACTIVE, INACTIVE]
  *         role_id:
  *           type: number
- *           default: 1
+ *           description: Role ID of the user
+ *       example:
+ *         first_name: John
+ *         last_name: Doe
+ *         email: johndoe@gmail.com
+ *         password: test1234
+ *         status: ACTIVE
+ *         role_id: 1
  */

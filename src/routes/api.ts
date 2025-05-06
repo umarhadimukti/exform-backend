@@ -12,7 +12,7 @@ import ResponseController from "../controllers/ResponseController";
 const router: Router = Router();
 
 /**
- * @openapi
+ * @swagger
  * /api/v1/current-user:
  *   get:
  *     summary: get current signed in user
@@ -25,9 +25,12 @@ const router: Router = Router();
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/CurrentUser'
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/CurrentUser'
  *       401:
  *         description: unauthorized, no token provided
  *       500:
