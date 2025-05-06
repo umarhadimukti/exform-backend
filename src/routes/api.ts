@@ -27,10 +27,14 @@ const router: Router = Router();
  *             schema:
  *               type: object
  *               properties:
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/CurrentUser'
+ *                 status:
+ *                   type: boolean
+ *                   default: true
+ *                 message:
+ *                   type: string
+ *                   default: successful get current user
+ *                 userInformation:
+ *                   $ref: '#/components/schemas/CurrentUser'
  *       401:
  *         description: unauthorized, no token provided
  *       500:
@@ -125,6 +129,19 @@ router.delete('/form/:id', jwtAuth(), async (req: Request, res: Response) => {
  *         description: successfully get all users
  *         content:
  *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   default: true
+ *                 length:
+ *                   type: integer
+ *                   default: 1
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Users'
  *       401:
  *         description: unauthorized, no token provided
  *       500:
