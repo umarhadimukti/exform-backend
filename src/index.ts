@@ -21,7 +21,7 @@ app.use(cookieParser());
 
 // cors
 app.use(cors({
-    origin: ['http://127.0.0.1:3000', 'http://localhost:3000'],
+    origin: ['http://localhost:3000', 'http://localhost:5173'],
     methods: ['GET', 'PUT', 'POST', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true, // allowed send cookies and headers authentication
@@ -31,13 +31,13 @@ app.use(cors({
 connectDB();
 
 // api routes
-app.use('/api/v1', apiRoutes);
+app.use('/api', apiRoutes);
 
 // auth routes
-app.use(authRoutes);
+app.use('/api/auth', authRoutes);
 
 // seed routes
-app.use(seedRoutes);
+app.use('/api', seedRoutes);
 
 // swagger docs
 swaggerDocs(app, port);

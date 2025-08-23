@@ -66,7 +66,7 @@ class AuthController
                 secure: process.env.APP_ENV as string === 'production',
                 sameSite: process.env.APP_ENV as string === 'production' ? 'strict' : 'lax',
                 maxAge: 1000 * 60 * 60 * 24 * 7, // 7 day
-                path: '/refresh-token'
+                path: "/"
             });
 
             return res.status(201).json({
@@ -154,7 +154,7 @@ class AuthController
                 secure: process.env.APP_ENV as string === 'production',
                 sameSite: process.env.APP_ENV as string === 'production' ? 'strict' : 'lax',
                 maxAge: 1000 * 60 * 60 * 24 * 7, // 7 day
-                path: '/refresh-token'
+                path: "/"
             });
 
             return res.status(200).json({
@@ -179,7 +179,8 @@ class AuthController
     public async refreshToken (req: Request, res: Response): Promise<Response>
     {
         try {
-            const { refreshToken: refreshTokenFromCookie } = req.cookies;
+            const { rt: refreshTokenFromCookie } = req.cookies;
+            console.log(refreshTokenFromCookie)
 
             if (!refreshTokenFromCookie) {
                 throw new CustomError('token doesn\'t exists.', 400);
@@ -210,7 +211,7 @@ class AuthController
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
                 maxAge: 7 * 24 * 60 * 60 * 1000, // 7 day in milisecond
-                path: '/refresh-token',
+                path: "/"
             });
 
             return res.status(200).json({
